@@ -30,13 +30,13 @@ public class SecSecurityConfig {
                .authorizeHttpRequests((authorize) ->
                        authorize
                                //.requestMatchers( "/login**", "/icons/**", "/_next/**", "/manifest.json", "/img/**", "/static/**").permitAll()
-                               .requestMatchers(HttpMethod.GET, "/index*", "/static/**", "/*.js", "/*.json", "/*.ico").permitAll()
+                               .requestMatchers( "/home**", "/index**", "/static/**", "/*.js", "/*.json", "/*.ico").permitAll()
                                .anyRequest().authenticated()
               ).formLogin(
                       form -> form
                               .loginPage("/index.html")
                               .loginProcessingUrl("/perform_login")
-                              .defaultSuccessUrl("/homepage.html",true)
+                              .defaultSuccessUrl("/home.html",true)
                               .failureUrl("/index.html?error=true")
                               //.failureUrl("/error")
                               .permitAll()
