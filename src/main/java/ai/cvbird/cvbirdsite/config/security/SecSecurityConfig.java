@@ -1,8 +1,8 @@
-package ai.cvbird.cvbirdsite.config;
+package ai.cvbird.cvbirdsite.config.security;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.http.HttpMethod;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
@@ -18,9 +18,14 @@ import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 @Configuration
 @EnableWebSecurity
 public class SecSecurityConfig {
+    @Autowired
+    UrlAuthenticationSuccessHandler urlAuthenticationSuccessHandler;
 
-    @Bean
-    public PasswordEncoder passwordEncoder() {
+    @Autowired
+    AwareHandler awareHandler;
+
+   @Bean
+   public PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
     }
 
@@ -30,14 +35,14 @@ public class SecSecurityConfig {
                .authorizeHttpRequests((authorize) ->
                        authorize
                                //.requestMatchers( "/login**", "/icons/**", "/_next/**", "/manifest.json", "/img/**", "/static/**").permitAll()
-                               .requestMatchers( "/home**", "/index**", "/static/**", "/*.js", "/*.json", "/*.ico").permitAll()
+                               .requestMatchers( "/signin**", "/", "/_next/**", "/static/**", "/*.js", "/*.json", "/*.ico").permitAll()
                                .anyRequest().authenticated()
               ).formLogin(
                       form -> form
-                              .loginPage("/index.html")
-                              .loginProcessingUrl("/perform_login")
-                              .defaultSuccessUrl("/home.html",true)
-                              .failureUrl("/index.html?error=true")
+                              .loginPage("/signin")
+                              .loginProcessingUrl("/signin")
+                              .successHandler(awareHandler)
+                              .failureUrl("/signin?error=true")
                               //.failureUrl("/error")
                               .permitAll()
               ).logout(
@@ -51,7 +56,7 @@ public class SecSecurityConfig {
     @Bean
     public UserDetailsService userDetailsService(){
         UserDetails user= User.builder()
-                .username("arctic")
+                .username("user")
                 .password(passwordEncoder().encode("user"))
                 .roles("USER")
                 .build();
