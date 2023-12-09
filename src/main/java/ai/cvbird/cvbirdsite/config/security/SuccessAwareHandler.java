@@ -4,5 +4,5 @@ import org.springframework.security.web.authentication.SavedRequestAwareAuthenti
 import org.springframework.stereotype.Component;
 
 @Component
-public class AwareHandler extends SavedRequestAwareAuthenticationSuccessHandler {
+public class SuccessAwareHandler extends SavedRequestAwareAuthenticationSuccessHandler {
 }

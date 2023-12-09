@@ -17,12 +17,14 @@ import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 
 @Configuration
 @EnableWebSecurity
-public class SecSecurityConfig {
-    @Autowired
-    UrlAuthenticationSuccessHandler urlAuthenticationSuccessHandler;
+public class SecurityConfig {
+
+    private final String[] PERMITTED_PATTERNS = {"/signin**",
+            "/", "/_next/**", "/static/**", "/user/user_info",
+            "/*.js", "/*.json", "/*.ico"};
 
     @Autowired
-    AwareHandler awareHandler;
+    SuccessAwareHandler successAwareHandler;
 
    @Bean
    public PasswordEncoder passwordEncoder() {
@@ -35,13 +37,13 @@ public class SecSecurityConfig {
                .authorizeHttpRequests((authorize) ->
                        authorize
                                //.requestMatchers( "/login**", "/icons/**", "/_next/**", "/manifest.json", "/img/**", "/static/**").permitAll()
-                               .requestMatchers( "/signin**", "/", "/_next/**", "/static/**", "/*.js", "/*.json", "/*.ico").permitAll()
+                               .requestMatchers( PERMITTED_PATTERNS).permitAll()
                                .anyRequest().authenticated()
               ).formLogin(
                       form -> form
                               .loginPage("/signin")
                               .loginProcessingUrl("/signin")
-                              .successHandler(awareHandler)
+                              .successHandler(successAwareHandler)
                               .failureUrl("/signin?error=true")
                               //.failureUrl("/error")
                               .permitAll()
