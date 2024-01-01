@@ -21,7 +21,7 @@ public class SecurityConfig {
 
     private final String[] PERMITTED_PATTERNS = {"/signin**",
             "/", "/_next/**", "/static/**", "/user/user_info",
-            "/*.js", "/*.json", "/*.ico"};
+            "/signin_error", "logout", "/*.js", "/*.json", "/*.ico"};
 
     @Autowired
     SuccessAwareHandler successAwareHandler;
@@ -44,8 +44,8 @@ public class SecurityConfig {
                               .loginPage("/signin")
                               .loginProcessingUrl("/signin")
                               .successHandler(successAwareHandler)
-                              .failureUrl("/signin?error=true")
-                              //.failureUrl("/error")
+                              //.failureUrl("/signin?error=true")
+                              .failureUrl("/signin_error")
                               .permitAll()
               ).logout(
                       logout -> logout
