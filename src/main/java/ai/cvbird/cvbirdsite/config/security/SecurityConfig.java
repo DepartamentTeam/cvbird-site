@@ -3,6 +3,10 @@ package ai.cvbird.cvbirdsite.config.security;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
+import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
@@ -19,12 +23,13 @@ import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 @EnableWebSecurity
 public class SecurityConfig {
 
-    private final String[] PERMITTED_PATTERNS = {"/signin**",
-            "/", "/_next/**", "/static/**", "/user/user_info",
-            "/*.js", "/*.json", "/*.ico"};
+   private final String[] PERMITTED_PATTERNS = {"/signin**", "/", "/_next/**", "/static/**", "/user/registration*", "/user_registration", "/signin_error", "logout", "/*.js", "/*.json", "/*.ico"};
 
-    @Autowired
-    SuccessAwareHandler successAwareHandler;
+   @Autowired
+   SuccessAwareHandler successAwareHandler;
+
+   @Autowired
+   CvBirdUserDetailsService cvBirdUserDetailsService;
 
    @Bean
    public PasswordEncoder passwordEncoder() {
@@ -37,15 +42,15 @@ public class SecurityConfig {
                .authorizeHttpRequests((authorize) ->
                        authorize
                                //.requestMatchers( "/login**", "/icons/**", "/_next/**", "/manifest.json", "/img/**", "/static/**").permitAll()
-                               .requestMatchers( PERMITTED_PATTERNS).permitAll()
+                               .requestMatchers(PERMITTED_PATTERNS).permitAll()
                                .anyRequest().authenticated()
               ).formLogin(
                       form -> form
                               .loginPage("/signin")
                               .loginProcessingUrl("/signin")
                               .successHandler(successAwareHandler)
-                              .failureUrl("/signin?error=true")
-                              //.failureUrl("/error")
+                              //.failureUrl("/signin?error=true")
+                              .failureUrl("/signin_error")
                               .permitAll()
               ).logout(
                       logout -> logout
@@ -54,21 +59,11 @@ public class SecurityConfig {
               );
        return http.build();
    }
-
     @Bean
-    public UserDetailsService userDetailsService(){
-        UserDetails user= User.builder()
-                .username("user")
-                .password(passwordEncoder().encode("user"))
-                .roles("USER")
-                .build();
-
-        UserDetails admin = User.builder()
-                .username("admin")
-                .password(passwordEncoder().encode("admin"))
-                .roles("ADMIN")
-                .build();
-
-        return new InMemoryUserDetailsManager(user, admin);
+    public DaoAuthenticationProvider daoAuthenticationProvider() {
+        DaoAuthenticationProvider provider = new DaoAuthenticationProvider();
+        provider.setUserDetailsService(cvBirdUserDetailsService);
+        provider.setPasswordEncoder(this.passwordEncoder());
+        return provider;
     }
 }

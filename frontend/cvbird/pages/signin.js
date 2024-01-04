@@ -23,6 +23,10 @@ function Signin() {
 
           <button className="w-100 btn btn-lg btn-primary" type="submit" value="Submit">Sign in</button>
         </form>
+        <form  method="post" action="/logout">
+                  <h1 className="h3 mb-3 fw-normal">Logout</h1>
+                  <button className="w-100 btn btn-lg btn-primary" type="submit" value="Submit">Logout</button>
+        </form>
       </main>
 
     </>
