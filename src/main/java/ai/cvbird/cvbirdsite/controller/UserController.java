@@ -1,10 +1,14 @@
 package ai.cvbird.cvbirdsite.controller;
 
+import ai.cvbird.cvbirdsite.dto.UserConverter;
 import ai.cvbird.cvbirdsite.dto.UserDto;
 import ai.cvbird.cvbirdsite.model.User;
+import ai.cvbird.cvbirdsite.registration.OnRegistrationCompleteEvent;
 import ai.cvbird.cvbirdsite.service.UserService;
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -24,10 +28,15 @@ public class UserController {
 
     UserService userService;
     PasswordEncoder passwordEncoder;
+    ApplicationEventPublisher eventPublisher;
+    UserConverter userConverter;
     @Autowired
-    UserController(UserService userService, PasswordEncoder passwordEncoder) {
+    UserController(UserService userService, PasswordEncoder passwordEncoder,
+                   ApplicationEventPublisher eventPublisher, UserConverter userConverter) {
         this.userService = userService;
         this.passwordEncoder = passwordEncoder;
+        this.eventPublisher = eventPublisher;
+        this.userConverter=userConverter;
     }
 
     @GetMapping("/user_info")
@@ -44,22 +53,11 @@ public class UserController {
     }
 
     @PostMapping(value = "/registration", consumes = MediaType.APPLICATION_FORM_URLENCODED_VALUE)
-    public ResponseEntity<UserDto> userRegistration(@Valid UserDto userDto) {
-        User user = userService.registerNewUserAccount(fromUserDTO(userDto));
-        return ResponseEntity.ok(fromUser(user));
-    }
-
-    private User fromUserDTO(UserDto userDto) {
-        return User.builder()
-                .email(userDto.getEmail())
-                .password(passwordEncoder.encode(userDto.getPassword()))
-                .build();
-    }
-
-    private UserDto fromUser(User user) {
-        return UserDto.builder()
-                .email(user.getEmail())
-                .build();
+    public ResponseEntity<UserDto> userRegistration(@Valid UserDto userDto, final HttpServletRequest request) {
+        User user = userService.registerNewUserAccount(userConverter.fromUserDTO(userDto));
+        String appUrl = request.getContextPath();
+        eventPublisher.publishEvent(new OnRegistrationCompleteEvent(user, request.getLocale(), appUrl));
+        return ResponseEntity.ok(userConverter.fromUser(user));
     }
 
     @ResponseStatus(HttpStatus.BAD_REQUEST)

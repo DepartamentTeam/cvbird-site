@@ -28,7 +28,14 @@ public class CvBirdUserDetailsService implements UserDetailsService {
         }
         List<GrantedAuthority> authorities =new ArrayList<>();
         authorities.add(new SimpleGrantedAuthority("USER"));
-        return new org.springframework.security.core.userdetails.User(user.getEmail(), user.getPassword(), true, true, true, true, authorities);
+        return new org.springframework.security.core.userdetails.User(
+                user.getEmail(),
+                user.getPassword(),
+                user.isEnabled(),
+                true,
+                true,
+                true,
+                authorities);
     }
 }
 

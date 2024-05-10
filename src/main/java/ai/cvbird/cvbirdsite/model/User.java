@@ -34,11 +34,10 @@ public class User {
      @Column(name = "password", nullable = false, updatable = false)
      String password;
 
-      @Column(name = "enabled", nullable = false)
-      private boolean enabled;
-
-      public User() {
-           super();
-           this.enabled=false;
-      }
+     @Column(name = "enabled", nullable = false)
+     private boolean enabled;
+     public User() {
+         super();
+         this.enabled=false;
+     }
 }

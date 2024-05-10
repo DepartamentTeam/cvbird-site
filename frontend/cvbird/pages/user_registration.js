@@ -11,7 +11,7 @@ export default function User_Registration(){
               <h1 className="h3 mb-3 fw-normal">Registration</h1>
                 <div>
                     <label >Email address</label>
-                     <input type="text" name="email" className="form-control" id="floatingInput" placeholder="Username" />
+                     <input type="text" name="email" className="form-control" id="floatingInput" placeholder="Email" />
                 </div>
                <div className="form-floating">
                            <input type="password" name="password" className="form-control" id="floatingPassword" placeholder="Password" />
