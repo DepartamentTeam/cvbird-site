@@ -28,4 +28,30 @@ public class UserServiceImpl implements UserService{
         final VerificationToken myToken = new VerificationToken(token, user);
         verificationTokenRepository.save(myToken);
     }
+
+    private boolean emailExist(String email) {
+        return userRepository.findByEmail(email) != null;
+    }
+
+    @Override
+    public User getUser(String verificationToken) {
+        User user = verificationTokenRepository.findByVerificationToken(verificationToken).getUser();
+        return user;
+    }
+
+    @Override
+    public VerificationToken getVerificationToken(String VerificationToken) {
+        return verificationTokenRepository.findByVerificationToken(VerificationToken);
+    }
+
+    @Override
+    public void saveRegisteredUser(User user) {
+        userRepository.save(user);
+    }
+
+    @Override
+    public void createVerificationToken(User user, String token) {
+        VerificationToken myToken = new VerificationToken(token, user);
+        verificationTokenRepository.save(myToken);
+    }
 }

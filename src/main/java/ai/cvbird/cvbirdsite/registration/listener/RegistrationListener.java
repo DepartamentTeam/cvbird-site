@@ -31,6 +31,9 @@ public class RegistrationListener implements ApplicationListener<OnRegistrationC
     @Value("${server.host}")
     private String serverHost;
 
+    @Value("${mail.sender}")
+    private String sender;
+
     @Override
     public void onApplicationEvent(OnRegistrationCompleteEvent event) {
         User user = event.getUser();
@@ -38,13 +41,14 @@ public class RegistrationListener implements ApplicationListener<OnRegistrationC
         userService.createVerificationTokenForUser(user, token);
 
         String recipientAddress = user.getEmail();
-        String confirmationUrl = event.getAppURL() + "/regitrationConfirm?token=" + token;
+        String confirmationUrl = event.getAppURL() + "/registration_confirm?token=" + token;
         String message = messages.getMessage("message.regSucc", null, event.getLocale());
 
         SimpleMailMessage email = new SimpleMailMessage();
         email.setTo(recipientAddress);
+        email.setFrom(sender);
         email.setSubject(subject);
-        email.setText(message + "\r\n" + serverHost + confirmationUrl);
+        email.setText("URL : " + serverHost + confirmationUrl);
         mailSender.send(email);
 
         //TODO delete it

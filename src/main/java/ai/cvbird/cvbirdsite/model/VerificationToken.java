@@ -26,6 +26,7 @@ import java.util.Date;
 @ToString
 @EqualsAndHashCode
 @FieldDefaults(level = AccessLevel.PRIVATE)
+@NoArgsConstructor
 public class VerificationToken {
     private static final int EXPIRATION = 60 * 24;
 
@@ -53,7 +54,6 @@ public class VerificationToken {
 
     public VerificationToken(final String verificationToken, final User user) {
         super();
-
         this.verificationToken = verificationToken;
         this.user = user;
         this.expiryDate = calculateExpiryDate(EXPIRATION);
