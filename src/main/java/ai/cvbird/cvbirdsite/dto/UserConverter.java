@@ -7,6 +7,7 @@ import org.springframework.stereotype.Component;
 
 @Component
 public class UserConverter {
+
     @Autowired
     PasswordEncoder passwordEncoder;
 
@@ -14,6 +15,13 @@ public class UserConverter {
         return User.builder()
                 .email(userDto.getEmail())
                 .password(passwordEncoder.encode(userDto.getPassword()))
+                .build();
+    }
+
+    public User fromUserDTOWithoutPass(UserDto userDto) {
+        return User.builder()
+                .email(userDto.getEmail())
+                .password(userDto.getPassword())
                 .build();
     }
 

@@ -20,7 +20,7 @@ public class SecurityConfig {
            , "/_next/**", "/static/**", "/user/registration*",
            "/user_registration", "/signin_error", "logout",
            "/*.js", "/*.json", "/*.ico", "/registration_confirm*",
-           "/user/user_info"};
+           "/user/user_info", "/cv/**", "/telegram/**"};
 
    @Autowired
    SuccessAwareHandler successAwareHandler;
