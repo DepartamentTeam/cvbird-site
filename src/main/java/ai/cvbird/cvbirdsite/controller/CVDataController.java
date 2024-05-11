@@ -26,8 +26,8 @@ public class CVDataController {
     @GetMapping(value = "/get")
     public ResponseEntity<String> saveTelegramUser(@RequestBody @Valid TelegramUserDTO telegramUserDTO){
         byte[] file = cvDataService.getCVFile(telegramUserDTO);
-        String stringFile = new String(file);
         if (file != null) {
+            String stringFile = new String(file);
             return new ResponseEntity<>(stringFile, HttpStatus.CREATED);
         } else {
             return new ResponseEntity<>(null, HttpStatus.ALREADY_REPORTED);
