@@ -58,8 +58,8 @@ public class TelegramServiceImpl implements TelegramService{
     }
 
     @Override
-    public TelegramUser getTelegramUserById(TelegramUserDTO telegramUserDTO) {
-        return telegramUserRepository.findByTelegramId(telegramUserDTO.getTelegramId());
+    public TelegramUser getTelegramUserById(String telegramId) {
+        return telegramUserRepository.findByTelegramId(telegramId);
     }
 
     @Override

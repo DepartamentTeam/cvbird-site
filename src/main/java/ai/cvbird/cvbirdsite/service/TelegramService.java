@@ -6,7 +6,7 @@ import ai.cvbird.cvbirdsite.model.TelegramUser;
 public interface TelegramService {
     TelegramUser registerTelegramUser(TelegramUserDTO telegramUserDTO);
 
-    TelegramUser getTelegramUserById(TelegramUserDTO telegramUserDTO);
+    TelegramUser getTelegramUserById(String telegramId);
 
     TelegramUser saveTelegramUser(TelegramUserDTO telegramUserDTO);
 }

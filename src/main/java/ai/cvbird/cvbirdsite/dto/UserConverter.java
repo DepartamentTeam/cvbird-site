@@ -18,6 +18,13 @@ public class UserConverter {
                 .build();
     }
 
+    public User fromUserDTOWithoutPass(UserDto userDto) {
+        return User.builder()
+                .email(userDto.getEmail())
+                .password(userDto.getPassword())
+                .build();
+    }
+
     public UserDto fromUser(User user) {
         return UserDto.builder()
                 .email(user.getEmail())

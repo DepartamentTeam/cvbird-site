@@ -51,3 +51,36 @@ CREATE INDEX idx__telegram_user__id
 
 CREATE INDEX idx__telegram_user__email
     ON telegram_user (email);
+
+--user cv data
+CREATE TABLE cv_data (
+  id BIGSERIAL NOT NULL PRIMARY KEY,
+  cvbird_user_id INT NOT NULL,
+  cv_file bytea,
+  cv_description TEXT,
+  CONSTRAINT fk_author FOREIGN KEY(cvbird_user_id) REFERENCES user_account(id)
+);
+
+CREATE INDEX idx__cv_data__id
+    ON cv_data (id);
+
+CREATE INDEX idx__cv_data__email
+    ON cv_data (cvbird_user_id);
+
+-- TODO
+--user cv digest
+CREATE TABLE cv_data (
+  id BIGSERIAL NOT NULL PRIMARY KEY,
+  user_id INT NOT NULL,
+  cv_file TEXT,
+  cv_description TEXT,
+  CONSTRAINT fk_author FOREIGN KEY(user_id) REFERENCES user_account(id)
+)
+--user data
+CREATE TABLE user_data (
+  id BIGSERIAL NOT NULL PRIMARY KEY,
+  user_id INT NOT NULL,
+  cv_file TEXT NOT NULL,
+  cv_description TEXT NOT NULL,
+  CONSTRAINT fk_author FOREIGN KEY(user_id) REFERENCES user_account(id)
+)

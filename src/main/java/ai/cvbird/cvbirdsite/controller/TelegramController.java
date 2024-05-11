@@ -40,10 +40,12 @@ public class TelegramController {
         }
     }
 
-    @GetMapping(value = "/get_user")
-    public ResponseEntity<TelegramUserDTO> getTelegramUser(TelegramUserDTO telegramUserDTO){
-        TelegramUser telegramUser = telegramService.getTelegramUserById(telegramUserDTO);
+    @GetMapping(value = "/get_user", consumes = MediaType.APPLICATION_JSON_VALUE,
+            produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<TelegramUserDTO> getTelegramUser(@RequestBody TelegramUserDTO telegramUserDTO){
+        TelegramUser telegramUser = telegramService.getTelegramUserById(telegramUserDTO.getTelegramId());
         if (telegramUser != null) {
+            telegramUser.getCvbirdUser().setPassword(null);
             return new ResponseEntity<>(telegramUserConverter.toDTO(telegramUser), HttpStatus.OK);
         }
         return new ResponseEntity<>(null, HttpStatus.OK);
