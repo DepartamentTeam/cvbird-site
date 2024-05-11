@@ -37,22 +37,31 @@ public class TelegramServiceImpl implements TelegramService{
     @Override
     @Transactional
     public TelegramUser registerTelegramUser(TelegramUserDTO telegramUserDTO) {
-        if (userRepository.findByEmail(telegramUserDTO.getEmail()) == null) {
+        if (telegramUserRepository.findByEmail(telegramUserDTO.getEmail()) == null) {
+            User user = userRepository.findByEmail(telegramUserDTO.getEmail());
+            if (user == null) {
+                User newUser = new User();
+                newUser.setEmail(telegramUserDTO.getEmail());
+                newUser.setEnabled(true);
+                String password = getNewPassword();
+                newUser.setPassword(passwordEncoder.encode(password));
+                User cvbirdUser = userRepository.save(newUser);
 
-            User user = new User();
-            user.setEmail(telegramUserDTO.getEmail());
-            user.setEnabled(true);
-            String password = getNewPassword();
-            user.setPassword(passwordEncoder.encode(password));
-            User cvbirdUser = userRepository.save(user);
+                TelegramUser telegramUser = telegramUserConverter.fromDTO(telegramUserDTO);
+                telegramUser.setCvbirdUser(cvbirdUser);
+                telegramUser.setRegistrationDate(ZonedDateTime.now());
+                TelegramUser newTelegramUser = telegramUserRepository.save(telegramUser);
 
-            TelegramUser telegramUser = telegramUserConverter.fromDTO(telegramUserDTO);
-            telegramUser.setCvbirdUser(cvbirdUser);
-            telegramUser.setRegistrationDate(ZonedDateTime.now());
-            TelegramUser newTelegramUser = telegramUserRepository.save(telegramUser);
-
-            applicationEventPublisher.publishEvent(new OnTelegramRegistrationCompleteEvent(cvbirdUser.getEmail(), password));
-            return newTelegramUser;
+                applicationEventPublisher.publishEvent(new OnTelegramRegistrationCompleteEvent(cvbirdUser.getEmail(), password));
+                return newTelegramUser;
+            } else {                                                // Link telegram user to cvbirdUser
+                TelegramUser telegramUser = telegramUserConverter.fromDTO(telegramUserDTO);
+                user.setEnabled(true);
+                telegramUser.setCvbirdUser(user);
+                telegramUser.setRegistrationDate(ZonedDateTime.now());
+                TelegramUser newTelegramUser = telegramUserRepository.save(telegramUser);
+                return newTelegramUser;
+            }
         }
         return null;
     }

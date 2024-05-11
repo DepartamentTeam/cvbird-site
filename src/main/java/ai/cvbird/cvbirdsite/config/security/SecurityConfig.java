@@ -41,9 +41,11 @@ public class SecurityConfig {
        http.csrf(AbstractHttpConfigurer::disable)
                .authorizeHttpRequests((authorize) ->
                        authorize
-                               //.requestMatchers( "/login**", "/icons/**", "/_next/**", "/manifest.json", "/img/**", "/static/**").permitAll()
                                .requestMatchers(PERMITTED_PATTERNS).permitAll()
                                .anyRequest().authenticated()
+                               //.anyRequest().permitAll()
+                               //.requestMatchers( "/login**", "/icons/**", "/_next/**", "/manifest.json", "/img/**", "/static/**").permitAll()
+
               ).formLogin(
                       form -> form
                               .loginPage("/signin")

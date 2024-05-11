@@ -31,7 +31,7 @@ public class TelegramController {
 
     @PostMapping(value = "/registration", consumes = MediaType.APPLICATION_JSON_VALUE,
             produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<String> saveTelegramUser(@RequestBody @Valid TelegramUserDTO telegramUserDTO,  final HttpServletRequest request){
+    public ResponseEntity<String> saveTelegramUser(@RequestBody @Valid TelegramUserDTO telegramUserDTO){
         TelegramUser telegramUser = telegramService.registerTelegramUser(telegramUserDTO);
         if (telegramUser != null) {
             return new ResponseEntity<>("The user has been successfully registered", HttpStatus.CREATED);
