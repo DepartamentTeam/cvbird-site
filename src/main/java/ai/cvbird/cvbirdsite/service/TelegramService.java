@@ -9,4 +9,6 @@ public interface TelegramService {
     TelegramUser getTelegramUserById(String telegramId);
 
     TelegramUser saveTelegramUser(TelegramUserDTO telegramUserDTO);
+
+    TelegramUser provideTelegramUser(TelegramUserDTO telegramUserDTO);
 }
