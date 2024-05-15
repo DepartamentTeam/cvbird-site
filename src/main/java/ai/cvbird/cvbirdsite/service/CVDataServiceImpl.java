@@ -36,7 +36,10 @@ public class CVDataServiceImpl implements CVDataService{
     @Override
     public byte[] getCVFile(String telegramId) {
         TelegramUser telegramUser = telegramUserRepository.findByTelegramId(telegramId);
-        return getCVFile(telegramUser.getCvbirdUser());
+        if (telegramUser != null) {
+            return getCVFile(telegramUser.getCvbirdUser());
+        }
+        return null;
     }
 
     @Override

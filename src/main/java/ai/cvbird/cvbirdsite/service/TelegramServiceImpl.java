@@ -1,9 +1,13 @@
 package ai.cvbird.cvbirdsite.service;
 
+import ai.cvbird.cvbirdsite.dao.TelegramStatisticRepository;
 import ai.cvbird.cvbirdsite.dao.TelegramUserRepository;
 import ai.cvbird.cvbirdsite.dao.UserRepository;
+import ai.cvbird.cvbirdsite.dto.TelegramStatisticConverter;
+import ai.cvbird.cvbirdsite.dto.TelegramStatisticDTO;
 import ai.cvbird.cvbirdsite.dto.TelegramUserConverter;
 import ai.cvbird.cvbirdsite.dto.TelegramUserDTO;
+import ai.cvbird.cvbirdsite.model.TelegramStatistic;
 import ai.cvbird.cvbirdsite.model.TelegramUser;
 import ai.cvbird.cvbirdsite.model.User;
 import ai.cvbird.cvbirdsite.registration.OnTelegramRegistrationCompleteEvent;
@@ -23,13 +27,19 @@ public class TelegramServiceImpl implements TelegramService{
     PasswordEncoder passwordEncoder;
 
     @Autowired
-    TelegramUserRepository telegramUserRepository;
-
-    @Autowired
     UserRepository userRepository;
 
     @Autowired
+    TelegramUserRepository telegramUserRepository;
+
+    @Autowired
     TelegramUserConverter telegramUserConverter;
+
+    @Autowired
+    TelegramStatisticRepository telegramStatisticRepository;
+
+    @Autowired
+    TelegramStatisticConverter telegramStatisticConverter;
 
     @Autowired
     ApplicationEventPublisher applicationEventPublisher;
@@ -37,22 +47,44 @@ public class TelegramServiceImpl implements TelegramService{
     @Override
     @Transactional
     public TelegramUser registerTelegramUser(TelegramUserDTO telegramUserDTO) {
-        if (userRepository.findByEmail(telegramUserDTO.getEmail()) == null) {
+        if (telegramUserDTO.getEmail() != null) {
+            if (telegramUserRepository.findByEmail(telegramUserDTO.getEmail()) == null) {
+                User user = userRepository.findByEmail(telegramUserDTO.getEmail());
+                if (user == null) {
+                    User newUser = new User();
+                    newUser.setEmail(telegramUserDTO.getEmail());
+                    newUser.setEnabled(true);
+                    String password = getNewPassword();
+                    newUser.setPassword(passwordEncoder.encode(password));
+                    User cvbirdUser = userRepository.save(newUser);
 
-            User user = new User();
-            user.setEmail(telegramUserDTO.getEmail());
-            user.setEnabled(true);
-            String password = getNewPassword();
-            user.setPassword(passwordEncoder.encode(password));
-            User cvbirdUser = userRepository.save(user);
+                    TelegramUser telegramUser = telegramUserConverter.fromDTO(telegramUserDTO);
+                    telegramUser.setCvbirdUser(cvbirdUser);
+                    telegramUser.setRegistrationDate(ZonedDateTime.now());
+                    TelegramUser newTelegramUser = telegramUserRepository.save(telegramUser);
 
-            TelegramUser telegramUser = telegramUserConverter.fromDTO(telegramUserDTO);
-            telegramUser.setCvbirdUser(cvbirdUser);
-            telegramUser.setRegistrationDate(ZonedDateTime.now());
-            TelegramUser newTelegramUser = telegramUserRepository.save(telegramUser);
+                    applicationEventPublisher.publishEvent(new OnTelegramRegistrationCompleteEvent(cvbirdUser.getEmail(), password));
+                    return newTelegramUser;
+                } else {                                                // Link telegram user to cvbirdUser
+                    TelegramUser telegramUser = telegramUserConverter.fromDTO(telegramUserDTO);
+                    user.setEnabled(true);
+                    telegramUser.setCvbirdUser(user);
+                    telegramUser.setRegistrationDate(ZonedDateTime.now());
+                    TelegramUser newTelegramUser = telegramUserRepository.save(telegramUser);
+                    return newTelegramUser;
+                }
+            }
 
-            applicationEventPublisher.publishEvent(new OnTelegramRegistrationCompleteEvent(cvbirdUser.getEmail(), password));
-            return newTelegramUser;
+        }
+        return null;
+    }
+
+    @Override
+    public TelegramStatistic saveTelegramStatistic(TelegramStatisticDTO telegramStatisticDTO) {
+        if (telegramStatisticDTO.getTelegramId() != null) {
+            TelegramStatistic telegramStatistic = telegramStatisticConverter.fromDTO(telegramStatisticDTO);
+            telegramStatistic.setRegistrationDate(ZonedDateTime.now());
+            return telegramStatisticRepository.save(telegramStatistic);
         }
         return null;
     }

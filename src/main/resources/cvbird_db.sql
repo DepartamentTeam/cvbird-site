@@ -15,16 +15,16 @@ CREATE INDEX idx__user_account__email
 -- Table verification_token
 CREATE table verification_token (
    id BIGSERIAL NOT NULL PRIMARY KEY,
-   token VARCHAR (255) NOT NULL,
+   verification_token VARCHAR (255) NOT NULL,
    expiry_date DATE NOT NULL,
    user_id BIGSERIAL NOT NULL,
-   FOREIGN KEY (user_id) REFERENCES  user_account (id),
+   FOREIGN KEY (user_id) REFERENCES  user_account (id)
 );
 
 CREATE INDEX idx__verification_token__id
     ON verification_token (id);
 
-CREATE INDEX idx__verification_token__verification_token
+CREATE INDEX idx__verification_token__verification_toke
     ON verification_token (verification_token);
 
 CREATE INDEX idx__verification_token__expiry_date
@@ -43,7 +43,7 @@ CREATE TABLE IF NOT EXISTS telegram_user(
  cvbird_user_id BIGSERIAL,
 
  UNIQUE(cvbird_user_id),
- FOREIGN KEY(cvbird_user_id) REFERENCES user_account(id)
+ cvbird_user_id REFERENCES user_account(id)
 );
 
 CREATE INDEX idx__telegram_user__id
@@ -51,6 +51,23 @@ CREATE INDEX idx__telegram_user__id
 
 CREATE INDEX idx__telegram_user__email
     ON telegram_user (email);
+--TG statistic
+CREATE TABLE IF NOT EXISTS telegram_statistic_data(
+ id BIGSERIAL NOT NULL PRIMARY KEY,
+ registration_date TIMESTAMP DEFAULT CURRENT_DATE,
+ telegram_id text not null unique,
+ telegram_first_name text,
+ telegram_is_bot boolean,
+ telegram_user_name text,
+ telegram_last_name text,
+ telegram_language_code text
+);
+
+CREATE INDEX idx__telegram_statistic_data__id
+    ON telegram_user (id);
+
+CREATE INDEX idx__telegram_statistic_data__telegram_id
+    ON telegram_user (telegram_id);
 
 --user cv data
 CREATE TABLE cv_data (

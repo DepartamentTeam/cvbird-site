@@ -13,7 +13,6 @@ import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.Base64;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -27,8 +26,8 @@ public class CVDataController {
     @GetMapping(value = "/get")
     public ResponseEntity<String> saveTelegramUser(@RequestBody @Valid TelegramUserDTO telegramUserDTO){
         byte[] file = cvDataService.getCVFile(telegramUserDTO);
-        String stringFile = new String(file);
         if (file != null) {
+            String stringFile = new String(file);
             return new ResponseEntity<>(stringFile, HttpStatus.CREATED);
         } else {
             return new ResponseEntity<>(null, HttpStatus.ALREADY_REPORTED);
