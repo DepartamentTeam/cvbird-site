@@ -1,11 +1,13 @@
 package ai.cvbird.cvbirdsite.controller;
 
 
+import ai.cvbird.cvbirdsite.dto.TelegramStatisticConverter;
+import ai.cvbird.cvbirdsite.dto.TelegramStatisticDTO;
 import ai.cvbird.cvbirdsite.dto.TelegramUserConverter;
 import ai.cvbird.cvbirdsite.dto.TelegramUserDTO;
+import ai.cvbird.cvbirdsite.model.TelegramStatistic;
 import ai.cvbird.cvbirdsite.model.TelegramUser;
 import ai.cvbird.cvbirdsite.service.TelegramService;
-import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -49,6 +51,17 @@ public class TelegramController {
             return new ResponseEntity<>(telegramUserConverter.toDTO(telegramUser), HttpStatus.OK);
         }
         return new ResponseEntity<>(null, HttpStatus.OK);
+    }
+
+    @PostMapping(value = "/statistic/save", consumes = MediaType.APPLICATION_JSON_VALUE,
+            produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<String> saveStatistic(@RequestBody @Valid TelegramStatisticDTO telegramStatisticDTO){
+        TelegramStatistic telegramStatistic = telegramService.saveTelegramStatistic(telegramStatisticDTO);
+        if (telegramStatistic != null) {
+            return new ResponseEntity<>("The statistic has been successfully saved", HttpStatus.CREATED);
+        } else {
+            return new ResponseEntity<>("The statistic does include telegramId", HttpStatus.ALREADY_REPORTED);
+        }
     }
 
     @ResponseStatus(HttpStatus.BAD_REQUEST)

@@ -1,9 +1,13 @@
 package ai.cvbird.cvbirdsite.service;
 
+import ai.cvbird.cvbirdsite.dao.TelegramStatisticRepository;
 import ai.cvbird.cvbirdsite.dao.TelegramUserRepository;
 import ai.cvbird.cvbirdsite.dao.UserRepository;
+import ai.cvbird.cvbirdsite.dto.TelegramStatisticConverter;
+import ai.cvbird.cvbirdsite.dto.TelegramStatisticDTO;
 import ai.cvbird.cvbirdsite.dto.TelegramUserConverter;
 import ai.cvbird.cvbirdsite.dto.TelegramUserDTO;
+import ai.cvbird.cvbirdsite.model.TelegramStatistic;
 import ai.cvbird.cvbirdsite.model.TelegramUser;
 import ai.cvbird.cvbirdsite.model.User;
 import ai.cvbird.cvbirdsite.registration.OnTelegramRegistrationCompleteEvent;
@@ -23,13 +27,19 @@ public class TelegramServiceImpl implements TelegramService{
     PasswordEncoder passwordEncoder;
 
     @Autowired
-    TelegramUserRepository telegramUserRepository;
-
-    @Autowired
     UserRepository userRepository;
 
     @Autowired
+    TelegramUserRepository telegramUserRepository;
+
+    @Autowired
     TelegramUserConverter telegramUserConverter;
+
+    @Autowired
+    TelegramStatisticRepository telegramStatisticRepository;
+
+    @Autowired
+    TelegramStatisticConverter telegramStatisticConverter;
 
     @Autowired
     ApplicationEventPublisher applicationEventPublisher;
@@ -70,12 +80,11 @@ public class TelegramServiceImpl implements TelegramService{
     }
 
     @Override
-    public TelegramUser provideTelegramUser(TelegramUserDTO telegramUserDTO) {
-        if (telegramUserDTO.getTelegramId() != null) {
-            TelegramUser telegramUser = telegramUserConverter.fromDTO(telegramUserDTO);
-            telegramUser.setCvbirdUser(null);
-            telegramUser.setRegistrationDate(ZonedDateTime.now());
-            return telegramUserRepository.save(telegramUser);
+    public TelegramStatistic saveTelegramStatistic(TelegramStatisticDTO telegramStatisticDTO) {
+        if (telegramStatisticDTO.getTelegramId() != null) {
+            TelegramStatistic telegramStatistic = telegramStatisticConverter.fromDTO(telegramStatisticDTO);
+            telegramStatistic.setRegistrationDate(ZonedDateTime.now());
+            return telegramStatisticRepository.save(telegramStatistic);
         }
         return null;
     }
