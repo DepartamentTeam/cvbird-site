@@ -105,4 +105,9 @@ public class TelegramServiceImpl implements TelegramService{
         RandomStringGenerator randomStringGenerator = new RandomStringGenerator.Builder().withinRange(pairs).build();
         return randomStringGenerator.generate(8,12);
     }
+
+    @Override
+    public TelegramStatistic getUserStatistic(String id) {
+       return telegramStatisticRepository.findByTelegramId(id);
+    }
 }

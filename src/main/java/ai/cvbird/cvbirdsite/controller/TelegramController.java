@@ -22,7 +22,7 @@ import java.util.Map;
 
 @RestController
 @RequestMapping("/telegram")
-@CrossOrigin
+@CrossOrigin(origins = "http://localhost:9000")
 public class TelegramController {
 
     @Autowired
@@ -49,6 +49,16 @@ public class TelegramController {
         if (telegramUser != null) {
             telegramUser.getCvbirdUser().setPassword(null);
             return new ResponseEntity<>(telegramUserConverter.toDTO(telegramUser), HttpStatus.OK);
+        }
+        return new ResponseEntity<>(null, HttpStatus.OK);
+    }
+
+    @PostMapping(value = "/get_user_statistic", consumes = MediaType.APPLICATION_JSON_VALUE,
+            produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<TelegramStatistic> getTelegramUserStatistic(@RequestBody TelegramStatistic request){
+        TelegramStatistic telegramStatistic = telegramService.getUserStatistic(request.getTelegramId());
+        if (telegramStatistic != null) {
+            return new ResponseEntity<>(telegramStatistic, HttpStatus.OK);
         }
         return new ResponseEntity<>(null, HttpStatus.OK);
     }

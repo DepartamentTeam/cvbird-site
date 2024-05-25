@@ -13,4 +13,6 @@ public interface TelegramService {
     TelegramUser saveTelegramUser(TelegramUserDTO telegramUserDTO);
 
     TelegramStatistic saveTelegramStatistic(TelegramStatisticDTO telegramStatisticDTO);
+
+    TelegramStatistic getUserStatistic(String id);
 }
