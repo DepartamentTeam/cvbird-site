@@ -1,5 +1,6 @@
 package ai.cvbird.cvbirdsite.controller;
 
+import ai.cvbird.cvbirdsite.dto.CVBirdUserDTO;
 import ai.cvbird.cvbirdsite.dto.TelegramRequestFile;
 import ai.cvbird.cvbirdsite.dto.TelegramUserDTO;
 import ai.cvbird.cvbirdsite.model.CVData;
@@ -24,8 +25,8 @@ public class CVDataController {
     CVDataService cvDataService;
 
     @GetMapping(value = "/get")
-    public ResponseEntity<String> saveTelegramUser(@RequestBody @Valid TelegramUserDTO telegramUserDTO){
-        byte[] file = cvDataService.getCVFile(telegramUserDTO);
+    public ResponseEntity<String> saveTelegramUser(@RequestBody CVBirdUserDTO cvBirdUserDTO){
+        byte[] file = cvDataService.getCVFile(cvBirdUserDTO);
         if (file != null) {
             String stringFile = new String(file);
             return new ResponseEntity<>(stringFile, HttpStatus.CREATED);

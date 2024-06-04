@@ -1,10 +1,8 @@
 package ai.cvbird.cvbirdsite.controller;
 
 
-import ai.cvbird.cvbirdsite.dto.TelegramStatisticConverter;
-import ai.cvbird.cvbirdsite.dto.TelegramStatisticDTO;
-import ai.cvbird.cvbirdsite.dto.TelegramUserConverter;
-import ai.cvbird.cvbirdsite.dto.TelegramUserDTO;
+import ai.cvbird.cvbirdsite.dto.*;
+import ai.cvbird.cvbirdsite.model.CVBirdUser;
 import ai.cvbird.cvbirdsite.model.TelegramStatistic;
 import ai.cvbird.cvbirdsite.model.TelegramUser;
 import ai.cvbird.cvbirdsite.service.TelegramService;
@@ -55,22 +53,22 @@ public class TelegramController {
 
     @PostMapping(value = "/get_user_statistic", consumes = MediaType.APPLICATION_JSON_VALUE,
             produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<TelegramStatistic> getTelegramUserStatistic(@RequestBody TelegramStatistic request){
-        TelegramStatistic telegramStatistic = telegramService.getUserStatistic(request.getTelegramId());
-        if (telegramStatistic != null) {
-            return new ResponseEntity<>(telegramStatistic, HttpStatus.OK);
+    public ResponseEntity<CVBirdUser> getTelegramUserStatistic(@RequestBody CVBirdUser cvBirdUser){
+        CVBirdUser response = telegramService.getCVBirdUser(cvBirdUser.getTelegramId());
+        if (response != null) {
+            return new ResponseEntity<>(response, HttpStatus.OK);
         }
         return new ResponseEntity<>(null, HttpStatus.OK);
     }
 
-    @PostMapping(value = "/statistic/save", consumes = MediaType.APPLICATION_JSON_VALUE,
+    @PostMapping(value = "/unknown_user/save", consumes = MediaType.APPLICATION_JSON_VALUE,
             produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<String> saveStatistic(@RequestBody @Valid TelegramStatisticDTO telegramStatisticDTO){
-        TelegramStatistic telegramStatistic = telegramService.saveTelegramStatistic(telegramStatisticDTO);
-        if (telegramStatistic != null) {
-            return new ResponseEntity<>("The statistic has been successfully saved", HttpStatus.CREATED);
+    public ResponseEntity<String> saveStatistic(@RequestBody CVBirdUserDTO cvBirdUserDTO){
+        CVBirdUser cvBirdUser = telegramService.saveUnknownUser(cvBirdUserDTO);
+        if (cvBirdUser != null) {
+            return new ResponseEntity<>("The user has been successfully saved", HttpStatus.CREATED);
         } else {
-            return new ResponseEntity<>("The statistic does include telegramId", HttpStatus.ALREADY_REPORTED);
+            return new ResponseEntity<>("The user does not include telegramId", HttpStatus.ALREADY_REPORTED);
         }
     }
 

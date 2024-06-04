@@ -42,8 +42,8 @@ public class SecurityConfig {
                .authorizeHttpRequests((authorize) ->
                        authorize
                                .requestMatchers(PERMITTED_PATTERNS).permitAll()
-                               .anyRequest().authenticated()
-                               //.anyRequest().permitAll() // uncomment to error debug
+                               //.anyRequest().authenticated()
+                               .anyRequest().permitAll() // uncomment to error debug
                                //.requestMatchers( "/login**", "/icons/**", "/_next/**", "/manifest.json", "/img/**", "/static/**").permitAll()
 
               ).formLogin(

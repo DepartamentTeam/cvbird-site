@@ -1,12 +1,11 @@
 package ai.cvbird.cvbirdsite.service;
 
+import ai.cvbird.cvbirdsite.dao.CVBirdUserRepository;
 import ai.cvbird.cvbirdsite.dao.TelegramStatisticRepository;
 import ai.cvbird.cvbirdsite.dao.TelegramUserRepository;
 import ai.cvbird.cvbirdsite.dao.UserRepository;
-import ai.cvbird.cvbirdsite.dto.TelegramStatisticConverter;
-import ai.cvbird.cvbirdsite.dto.TelegramStatisticDTO;
-import ai.cvbird.cvbirdsite.dto.TelegramUserConverter;
-import ai.cvbird.cvbirdsite.dto.TelegramUserDTO;
+import ai.cvbird.cvbirdsite.dto.*;
+import ai.cvbird.cvbirdsite.model.CVBirdUser;
 import ai.cvbird.cvbirdsite.model.TelegramStatistic;
 import ai.cvbird.cvbirdsite.model.TelegramUser;
 import ai.cvbird.cvbirdsite.model.User;
@@ -36,10 +35,10 @@ public class TelegramServiceImpl implements TelegramService{
     TelegramUserConverter telegramUserConverter;
 
     @Autowired
-    TelegramStatisticRepository telegramStatisticRepository;
+    CVBirdUserRepository cvBirdUserRepository;
 
     @Autowired
-    TelegramStatisticConverter telegramStatisticConverter;
+    CVBirdUserConverter cvBirdUserConverter;
 
     @Autowired
     ApplicationEventPublisher applicationEventPublisher;
@@ -80,11 +79,11 @@ public class TelegramServiceImpl implements TelegramService{
     }
 
     @Override
-    public TelegramStatistic saveTelegramStatistic(TelegramStatisticDTO telegramStatisticDTO) {
-        if (telegramStatisticDTO.getTelegramId() != null) {
-            TelegramStatistic telegramStatistic = telegramStatisticConverter.fromDTO(telegramStatisticDTO);
-            telegramStatistic.setRegistrationDate(ZonedDateTime.now());
-            return telegramStatisticRepository.save(telegramStatistic);
+    public CVBirdUser saveUnknownUser(CVBirdUserDTO cvBirdUserDTO) {
+        if (cvBirdUserDTO.getTelegramId() != null) {
+            CVBirdUser cvBirdUser = cvBirdUserConverter.fromDTO(cvBirdUserDTO);
+            cvBirdUser.setRegistrationDate(ZonedDateTime.now());
+            return cvBirdUserRepository.save(cvBirdUser);
         }
         return null;
     }
@@ -107,7 +106,7 @@ public class TelegramServiceImpl implements TelegramService{
     }
 
     @Override
-    public TelegramStatistic getUserStatistic(String id) {
-       return telegramStatisticRepository.findByTelegramId(id);
+    public CVBirdUser getCVBirdUser(String id) {
+       return cvBirdUserRepository.findByTelegramId(id);
     }
 }

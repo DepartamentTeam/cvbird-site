@@ -1,12 +1,11 @@
 package ai.cvbird.cvbirdsite.service;
 
+import ai.cvbird.cvbirdsite.dao.CVBirdUserRepository;
 import ai.cvbird.cvbirdsite.dao.CVDataRepository;
 import ai.cvbird.cvbirdsite.dao.TelegramUserRepository;
 import ai.cvbird.cvbirdsite.dao.UserRepository;
-import ai.cvbird.cvbirdsite.dto.TelegramUserConverter;
-import ai.cvbird.cvbirdsite.dto.TelegramUserDTO;
-import ai.cvbird.cvbirdsite.dto.UserConverter;
-import ai.cvbird.cvbirdsite.dto.UserDto;
+import ai.cvbird.cvbirdsite.dto.*;
+import ai.cvbird.cvbirdsite.model.CVBirdUser;
 import ai.cvbird.cvbirdsite.model.CVData;
 import ai.cvbird.cvbirdsite.model.TelegramUser;
 import ai.cvbird.cvbirdsite.model.User;
@@ -25,37 +24,38 @@ public class CVDataServiceImpl implements CVDataService{
     UserRepository userRepository;
 
     @Autowired
-    UserConverter userConverter;
+    CVBirdUserConverter cvBirdUserConverter;
 
     @Autowired
     TelegramUserRepository telegramUserRepository;
 
     @Autowired
-    TelegramUserConverter telegramUserConverter;
+    CVBirdUserRepository cvBirdUserRepository;
 
     @Override
     public byte[] getCVFile(String telegramId) {
-        TelegramUser telegramUser = telegramUserRepository.findByTelegramId(telegramId);
-        if (telegramUser != null) {
-            return getCVFile(telegramUser.getCvbirdUser());
+        CVBirdUser cvBirdUser = cvBirdUserRepository.findByTelegramId(telegramId);
+        if (cvBirdUser != null) {
+            return getCVFile(cvBirdUser);
         }
         return null;
     }
 
     @Override
-    public byte[] getCVFile(TelegramUserDTO telegramUserDTO) {
-        return getCVFile(telegramUserDTO.getTelegramId());
+    public byte[] getCVFile(CVBirdUserDTO cvBirdUserDTO) {
+        cvBirdUserConverter.fromDTO(cvBirdUserDTO);
+        return getCVFile(cvBirdUserDTO.getTelegramId());
     }
 
     @Override
     public byte[] getCVFile(Long id) {
-       Optional<User> oUser = userRepository.findById(id);
-        return oUser.map(this::getCVFile).orElse(null);
+       Optional<CVBirdUser> optionalCVBirdUser = cvBirdUserRepository.findById(id);
+        return optionalCVBirdUser.map(this::getCVFile).orElse(null);
     }
 
     @Override
-    public byte[] getCVFile(User user) {
-        CVData cvData = cvDataRepository.findByCvbirdUser(user);
+    public byte[] getCVFile(CVBirdUser cvBirdUser) {
+        CVData cvData = cvDataRepository.findByCvbirdUser(cvBirdUser);
         if (cvData != null) {
             return cvData.getCvFile();
         }
@@ -64,20 +64,14 @@ public class CVDataServiceImpl implements CVDataService{
 
     @Override
     public CVData setCVFile(String telegramId, byte[] cvFile) {
-        TelegramUser telegramUser = telegramUserRepository.findByTelegramId(telegramId);
-        return  setCVFile(telegramUser.getCvbirdUser(), cvFile);
+        CVBirdUser cvBirdUser = cvBirdUserRepository.findByTelegramId(telegramId);
+        return  setCVFile(cvBirdUser, cvFile);
     }
 
     @Override
-    public CVData setCVFile(TelegramUserDTO telegramUserDTO, byte[] cvFile) {
-        TelegramUser telegramUser = telegramUserRepository.findByTelegramId(telegramUserDTO.getTelegramId());
-        return  setCVFile( telegramUser.getCvbirdUser(), cvFile);
-    }
-
-    @Override
-    public CVData setCVFile(User user, byte[] cvFile) {
+    public CVData setCVFile(CVBirdUser cvBirdUser, byte[] cvFile) {
         CVData cvData = new CVData();
-        cvData.setCvbirdUser(user);
+        cvData.setCvbirdUser(cvBirdUser);
         cvData.setCvFile(cvFile);
         return cvDataRepository.save(cvData);
     }
