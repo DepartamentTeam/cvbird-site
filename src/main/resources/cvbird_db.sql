@@ -99,7 +99,7 @@ CREATE INDEX idx__telegram_statistic_data__telegram_id
 CREATE TABLE cv_data (
   id BIGSERIAL NOT NULL PRIMARY KEY,
   cvbird_user_id INT NOT NULL,
-  cv_file bytea,
+  cv_file text,
   cv_description TEXT,
   CONSTRAINT fk_author FOREIGN KEY(cvbird_user_id) REFERENCES cvbird_user(cvbird_user_id)
 );

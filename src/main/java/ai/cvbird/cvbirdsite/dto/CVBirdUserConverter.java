@@ -11,6 +11,30 @@ public class CVBirdUserConverter {
     @Autowired
     PasswordEncoder passwordEncoder;
 
+    public CVBirdUserResponse toCVBirdUserResponse(CVBirdUser cvBirdUser) {
+        CVBirdUserResponse cvBirdUserResponse = new CVBirdUserResponse();
+        cvBirdUserResponse.setCvBirdUserId(cvBirdUser.getCvBirdUserId());
+        cvBirdUserResponse.setRegistrationDate(cvBirdUser.getRegistrationDate());
+        cvBirdUserResponse.setTelegramId(cvBirdUser.getTelegramId());
+        cvBirdUserResponse.setTelegramFirstName(cvBirdUser.getTelegramFirstName());
+        cvBirdUserResponse.setTelegramUserName(cvBirdUser.getTelegramUserName());
+        cvBirdUserResponse.setTelegramLastName(cvBirdUser.getTelegramLastName());
+        cvBirdUserResponse.setTelegramIsBot(cvBirdUser.getTelegramIsBot());
+        cvBirdUserResponse.setTelegramLanguageCode(cvBirdUser.getTelegramLanguageCode());
+        cvBirdUserResponse.setEmail(cvBirdUserResponse.getEmail());
+        return cvBirdUserResponse;
+    }
+    public CVBirdUser fromTelegramStatisticDTO(TelegramStatisticDTO telegramStatisticDTO) {
+        CVBirdUser cvBirdUser = new CVBirdUser();
+        cvBirdUser.setTelegramId(telegramStatisticDTO.getTelegramId());
+        cvBirdUser.setTelegramFirstName(telegramStatisticDTO.getTelegramFirstName());
+        cvBirdUser.setTelegramUserName(telegramStatisticDTO.getTelegramUserName());
+        cvBirdUser.setTelegramLastName(telegramStatisticDTO.getTelegramLastName());
+        cvBirdUser.setTelegramIsBot(telegramStatisticDTO.getTelegramIsBot());
+        cvBirdUser.setTelegramLanguageCode(telegramStatisticDTO.getTelegramLanguageCode());
+        return cvBirdUser;
+    }
+
     public CVBirdUser fromDTO(CVBirdUserDTO cvBirdUserDTO) {
         CVBirdUser cvBirdUser = new CVBirdUser();
         cvBirdUser.setCvBirdUserId(cvBirdUserDTO.getCvBirdUserId());

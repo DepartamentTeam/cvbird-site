@@ -89,6 +89,17 @@ public class TelegramServiceImpl implements TelegramService{
     }
 
     @Override
+    public CVBirdUser saveUnknownUser(TelegramStatisticDTO telegramStatisticDTO) {
+        if (telegramStatisticDTO.getTelegramId() != null) {
+            CVBirdUser cvBirdUser = cvBirdUserConverter.fromTelegramStatisticDTO(telegramStatisticDTO);
+            cvBirdUser.setRegistrationDate(ZonedDateTime.now());
+            cvBirdUser.setEnabled(true);
+            return cvBirdUserRepository.save(cvBirdUser);
+        }
+        return null;
+    }
+
+    @Override
     public TelegramUser getTelegramUserById(String telegramId) {
         return telegramUserRepository.findByTelegramId(telegramId);
     }
@@ -106,7 +117,7 @@ public class TelegramServiceImpl implements TelegramService{
     }
 
     @Override
-    public CVBirdUser getCVBirdUser(String id) {
-       return cvBirdUserRepository.findByTelegramId(id);
+    public CVBirdUser getCVBirdUser(String telegramId) {
+       return cvBirdUserRepository.findByTelegramId(telegramId);
     }
 }

@@ -20,7 +20,10 @@ public class SecurityConfig {
            , "/_next/**", "/static/**", "/user/registration*",
            "/user_registration", "/signin_error", "logout",
            "/*.js", "/*.json", "/*.ico", "/registration_confirm*",
-           "/user/user_info", "/cv/**", "/telegram/**"};
+           "/user/user_info", "/cv/**", "/telegram/**", "/swagger/**",
+           "/swagger/swagger/swagger-ui/index.html",
+           "/swagger/api-docs", "/ui.html", "/webjars/**",
+           "/vacancy/**"};
 
    @Autowired
    SuccessAwareHandler successAwareHandler;
@@ -42,8 +45,8 @@ public class SecurityConfig {
                .authorizeHttpRequests((authorize) ->
                        authorize
                                .requestMatchers(PERMITTED_PATTERNS).permitAll()
-                               //.anyRequest().authenticated()
-                               .anyRequest().permitAll() // uncomment to error debug
+                               .anyRequest().authenticated()
+                               //.anyRequest().permitAll() // uncomment to error debug
                                //.requestMatchers( "/login**", "/icons/**", "/_next/**", "/manifest.json", "/img/**", "/static/**").permitAll()
 
               ).formLogin(

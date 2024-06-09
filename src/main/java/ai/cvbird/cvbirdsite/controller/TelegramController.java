@@ -3,10 +3,13 @@ package ai.cvbird.cvbirdsite.controller;
 
 import ai.cvbird.cvbirdsite.dto.*;
 import ai.cvbird.cvbirdsite.model.CVBirdUser;
-import ai.cvbird.cvbirdsite.model.TelegramStatistic;
-import ai.cvbird.cvbirdsite.model.TelegramUser;
 import ai.cvbird.cvbirdsite.service.TelegramService;
-import jakarta.validation.Valid;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -27,48 +30,43 @@ public class TelegramController {
     TelegramService telegramService;
 
     @Autowired
-    TelegramUserConverter telegramUserConverter;
+    CVBirdUserConverter cvBirdUserConverter;
 
-    @PostMapping(value = "/registration", consumes = MediaType.APPLICATION_JSON_VALUE,
+    @Operation(summary = "Get CVBirdUser by Telegram ID")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "User has been found")})
+    @GetMapping(value = "/get_cvbird_user/{telegramId}",
             produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<String> saveTelegramUser(@RequestBody @Valid TelegramUserDTO telegramUserDTO){
-        TelegramUser telegramUser = telegramService.registerTelegramUser(telegramUserDTO);
-        if (telegramUser != null) {
-            return new ResponseEntity<>("The user has been successfully registered", HttpStatus.CREATED);
-        } else {
-            return new ResponseEntity<>("The email already exists", HttpStatus.ALREADY_REPORTED);
-        }
-    }
+    public ResponseEntity<CVBirdUserResponse> getCVBirdUser(@Parameter(description = "Telegram ID") @PathVariable String telegramId){
+        CVBirdUser cvBirdUser = telegramService.getCVBirdUser(telegramId);
+        CVBirdUserResponse cvBirdUserResponse = cvBirdUserConverter.toCVBirdUserResponse(cvBirdUser);
 
-    @GetMapping(value = "/get_user", consumes = MediaType.APPLICATION_JSON_VALUE,
-            produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<TelegramUserDTO> getTelegramUser(@RequestBody TelegramUserDTO telegramUserDTO){
-        TelegramUser telegramUser = telegramService.getTelegramUserById(telegramUserDTO.getTelegramId());
-        if (telegramUser != null) {
-            telegramUser.getCvbirdUser().setPassword(null);
-            return new ResponseEntity<>(telegramUserConverter.toDTO(telegramUser), HttpStatus.OK);
+        if (cvBirdUserResponse != null) {
+            return new ResponseEntity<>(cvBirdUserResponse, HttpStatus.OK);
         }
         return new ResponseEntity<>(null, HttpStatus.OK);
     }
 
-    @PostMapping(value = "/get_user_statistic", consumes = MediaType.APPLICATION_JSON_VALUE,
-            produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<CVBirdUser> getTelegramUserStatistic(@RequestBody CVBirdUser cvBirdUser){
-        CVBirdUser response = telegramService.getCVBirdUser(cvBirdUser.getTelegramId());
-        if (response != null) {
-            return new ResponseEntity<>(response, HttpStatus.OK);
-        }
-        return new ResponseEntity<>(null, HttpStatus.OK);
-    }
-
+    @Operation(summary = "Save user from Telegram. Create new CVBirdUser")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "User has been saved",
+                    content = { @Content(mediaType = "application/json",
+                            schema = @Schema(implementation = CVBirdUserResponse.class)) }),
+            @ApiResponse(responseCode = "409", description = "User already exists",
+                    content = @Content) })
     @PostMapping(value = "/unknown_user/save", consumes = MediaType.APPLICATION_JSON_VALUE,
             produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<String> saveStatistic(@RequestBody CVBirdUserDTO cvBirdUserDTO){
-        CVBirdUser cvBirdUser = telegramService.saveUnknownUser(cvBirdUserDTO);
-        if (cvBirdUser != null) {
-            return new ResponseEntity<>("The user has been successfully saved", HttpStatus.CREATED);
+    public ResponseEntity<CVBirdUserResponse> saveUnknownUser(@io.swagger.v3.oas.annotations.parameters.RequestBody(description = "Don't fill the ID and registration date") @RequestBody TelegramStatisticDTO telegramStatisticDTO){
+        if (telegramService.getCVBirdUser(telegramStatisticDTO.getTelegramId()) == null) {
+            CVBirdUser cvBirdUser = telegramService.saveUnknownUser(telegramStatisticDTO);
+            if (cvBirdUser != null) {
+                CVBirdUserResponse cvBirdUserResponse = cvBirdUserConverter.toCVBirdUserResponse(cvBirdUser);
+                return new ResponseEntity<>(cvBirdUserResponse, HttpStatus.CREATED);
+            } else {
+                return new ResponseEntity<>(null, HttpStatus.CONFLICT);
+            }
         } else {
-            return new ResponseEntity<>("The user does not include telegramId", HttpStatus.ALREADY_REPORTED);
+            return new ResponseEntity<>(null, HttpStatus.CONFLICT);
         }
     }
 

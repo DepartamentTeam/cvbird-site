@@ -29,7 +29,7 @@ public class CVData {
     CVBirdUser cvbirdUser;
 
     @Column(name = "cv_file", updatable = false)
-    byte[] cvFile;
+    String cvFile;
 
     @Column(name = "cv_description", updatable = false)
     String cvDescription;
