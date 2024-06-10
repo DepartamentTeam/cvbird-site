@@ -30,9 +30,9 @@ public class VacancyController {
     @Autowired
     TelegramService telegramService;
 
-    @Operation(summary = "Get CVBirdUser by CVBirdUserId")
+    @Operation(summary = "Get list of recommended vacancies by CVBirdUserId")
     @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "User has been found")})
+            @ApiResponse(responseCode = "200", description = "Vacancies have been found")})
     @GetMapping(value = "/get/{cvBirdUserId}", params = { "page", "size" })
     public ResponseEntity<List<Vacancy>> getVacancy(@RequestParam("page") int page,
                                                        @RequestParam("size") int size,@PathVariable Long cvBirdUserId) {
@@ -40,9 +40,9 @@ public class VacancyController {
         return new ResponseEntity<>(pages.getContent(), HttpStatus.OK);
     }
 
-    @Operation(summary = "Get CVBirdUser by Telegram ID")
+    @Operation(summary = "Get list of recommended vacancies by CVBirdUserId by Telegram ID")
     @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "User has been found")})
+            @ApiResponse(responseCode = "200", description = "Vacancies have been found")})
     @GetMapping(value = "/get_by_telegram_id/{telegramId}", params = { "page", "size" })
     public ResponseEntity<List<Vacancy>> getCVByTelegramId(@RequestParam("page") int page,
                                                     @RequestParam("size") int size,@RequestBody String telegramId){

@@ -2,12 +2,10 @@ package ai.cvbird.cvbirdsite.controller;
 
 import ai.cvbird.cvbirdsite.dto.CVBirdUserDTO;
 import ai.cvbird.cvbirdsite.dto.TelegramRequestFile;
-import ai.cvbird.cvbirdsite.model.CVBirdUser;
 import ai.cvbird.cvbirdsite.model.CVData;
 import ai.cvbird.cvbirdsite.service.CVDataService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
-import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import org.springframework.beans.factory.annotation.Autowired;

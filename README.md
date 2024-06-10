@@ -31,5 +31,9 @@ For Linux
    ```sh
    ./mvnw spring-boot:run
    ```
-
-
+### Run
+4. Swagger:
+   ```http
+   http://localhost:8089/swagger/ui.html
+   ```
+   

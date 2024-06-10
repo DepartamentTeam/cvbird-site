@@ -11,6 +11,7 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
+import org.springframework.web.bind.annotation.CrossOrigin;
 
 @Configuration
 @EnableWebSecurity
@@ -21,9 +22,8 @@ public class SecurityConfig {
            "/user_registration", "/signin_error", "logout",
            "/*.js", "/*.json", "/*.ico", "/registration_confirm*",
            "/user/user_info", "/cv/**", "/telegram/**", "/swagger/**",
-           "/swagger/swagger/swagger-ui/index.html",
-           "/swagger/api-docs", "/ui.html", "/webjars/**",
-           "/vacancy/**"};
+           "/swagger-ui/**","/actuator", "/webjars/**","/v3/api-docs",
+           "/v3/api-docs/swagger-config", "/vacancy/**"};
 
    @Autowired
    SuccessAwareHandler successAwareHandler;
