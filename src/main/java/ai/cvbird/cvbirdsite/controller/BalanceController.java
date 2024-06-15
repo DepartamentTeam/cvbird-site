@@ -2,7 +2,9 @@ package ai.cvbird.cvbirdsite.controller;
 
 import ai.cvbird.cvbirdsite.dto.StringResponse;
 import ai.cvbird.cvbirdsite.exception.NotEnoughFundsException;
+import ai.cvbird.cvbirdsite.model.CVBirdUser;
 import ai.cvbird.cvbirdsite.service.BalanceService;
+import ai.cvbird.cvbirdsite.service.TelegramService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
@@ -24,6 +26,9 @@ import java.util.Map;
 public class BalanceController {
 
     @Autowired
+    TelegramService telegramService;
+
+    @Autowired
     BalanceService balanceService;
 
     @Operation(summary = "Get balance by Telegram id")
@@ -41,8 +46,13 @@ public class BalanceController {
             produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<StringResponse> topUp(@PathVariable String telegramId, @PathVariable String amount){
         BigDecimal bigDecimalAmount = new BigDecimal(amount);
-        BigDecimal balance = balanceService.balanceTopUp(telegramId, bigDecimalAmount);
-        return new ResponseEntity<>(new StringResponse(balance.toString()), HttpStatus.OK);
+        CVBirdUser cvBirdUser = telegramService.getCVBirdUser(telegramId);
+        if (cvBirdUser != null) {
+            BigDecimal balance = balanceService.balanceTopUp(telegramId, bigDecimalAmount);
+            return new ResponseEntity<>(new StringResponse(balance.toString()), HttpStatus.OK);
+        }
+        StringResponse stringResponse = new StringResponse("There is no such user " + telegramId);
+        return new ResponseEntity<>(stringResponse, HttpStatus.OK);
     }
 
     @Operation(summary = "Debiting funds from user account")
