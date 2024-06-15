@@ -52,7 +52,7 @@ public class VacancyController {
             }
 
         }
-        StringResponse stringResponse = new StringResponse("There is no such user telegramId");
+        StringResponse stringResponse = new StringResponse("There is no such user" + telegramId);
         return new ResponseEntity<>(stringResponse, HttpStatus.OK);
     }
 
