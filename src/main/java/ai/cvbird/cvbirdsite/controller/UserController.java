@@ -1,10 +1,12 @@
 package ai.cvbird.cvbirdsite.controller;
 
+import ai.cvbird.cvbirdsite.dto.StringResponse;
 import ai.cvbird.cvbirdsite.dto.UserConverter;
 import ai.cvbird.cvbirdsite.dto.UserDto;
 import ai.cvbird.cvbirdsite.model.User;
 import ai.cvbird.cvbirdsite.registration.OnRegistrationCompleteEvent;
 import ai.cvbird.cvbirdsite.service.UserService;
+import io.swagger.v3.oas.annotations.Operation;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -39,8 +41,9 @@ public class UserController {
         this.userConverter=userConverter;
     }
 
+    @Operation(summary = "Get current WEB user")
     @GetMapping("/user_info")
-    public ResponseEntity<String> getUserInfo(){
+    public ResponseEntity<StringResponse> getUserInfo(){
         Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         String username;
 
@@ -49,10 +52,12 @@ public class UserController {
         } else {
             username = principal.toString();
         }
-        return ResponseEntity.ok(username);
+
+        StringResponse stringResponse = new StringResponse(username);
+        return ResponseEntity.ok(stringResponse);
     }
 
-    @PostMapping(value = "/registration", consumes = MediaType.APPLICATION_FORM_URLENCODED_VALUE)
+    //@PostMapping(value = "/registration", consumes = MediaType.APPLICATION_FORM_URLENCODED_VALUE)
     public ResponseEntity<UserDto> userRegistration(@Valid UserDto userDto, final HttpServletRequest request) {
         User user = userService.registerNewUserAccount(userConverter.fromUserDTO(userDto));
         String appUrl = request.getContextPath();

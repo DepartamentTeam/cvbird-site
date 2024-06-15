@@ -1,9 +1,11 @@
 package ai.cvbird.cvbirdsite.controller;
 
 import ai.cvbird.cvbirdsite.dto.CVBirdUserDTO;
+import ai.cvbird.cvbirdsite.dto.StringResponse;
 import ai.cvbird.cvbirdsite.dto.TelegramRequestFile;
 import ai.cvbird.cvbirdsite.model.CVData;
 import ai.cvbird.cvbirdsite.service.CVDataService;
+import com.google.gson.Gson;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
@@ -23,14 +25,17 @@ import java.util.Map;
 @RequestMapping("/cv")
 @CrossOrigin
 public class CVDataController {
+
+    private static final Gson gson = new Gson();
+
     @Autowired
     CVDataService cvDataService;
 
-    @GetMapping(value = "/get")
-    public ResponseEntity<String> getCV(@RequestBody CVBirdUserDTO cvBirdUserDTO){
+    @GetMapping(value = "/get", produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<StringResponse> getCV(@RequestBody CVBirdUserDTO cvBirdUserDTO){
         String file = cvDataService.getCVFile(cvBirdUserDTO);
         if (file != null) {
-            return new ResponseEntity<>(file, HttpStatus.OK);
+            return new ResponseEntity<>(new StringResponse(file), HttpStatus.OK);
         } else {
             return new ResponseEntity<>(null, HttpStatus.ALREADY_REPORTED);
         }
@@ -39,13 +44,13 @@ public class CVDataController {
     @Operation(summary = "Get CV by Telegram ID. Return text in base64")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "CV has been saved")})
-    @GetMapping(value = "/get_by_telegram_id/{telegramId}")
-    public ResponseEntity<String> getCVByTelegramId(@PathVariable String telegramId){
+    @GetMapping(value = "/get_by_telegram_id/{telegramId}", produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<StringResponse> getCVByTelegramId(@PathVariable String telegramId){
         String file = cvDataService.getCVFile(telegramId);
         if (file != null) {
-            return new ResponseEntity<>(file, HttpStatus.OK);
+            return new ResponseEntity<>(new StringResponse(file), HttpStatus.OK);
         } else {
-            return new ResponseEntity<>("CV was not found", HttpStatus.OK);
+            return new ResponseEntity<>(new StringResponse("CV was not found"), HttpStatus.OK);
         }
     }
 
@@ -56,12 +61,12 @@ public class CVDataController {
                     content = @Content) })
     @PostMapping(value = "/store_by_telegram_id", consumes = MediaType.APPLICATION_JSON_VALUE,
             produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<String> storeCVByTelegramId(@RequestBody TelegramRequestFile telegramRequestFile){
+    public ResponseEntity<StringResponse> storeCVByTelegramId(@RequestBody TelegramRequestFile telegramRequestFile){
         if (cvDataService.getCVFile(telegramRequestFile.getTelegramId()) == null) {
             CVData cvData = cvDataService.setCVFile(telegramRequestFile.getTelegramId(), telegramRequestFile.getFile());
-            return new ResponseEntity<>("CV has been saved", HttpStatus.OK);
+            return new ResponseEntity<>(new StringResponse("CV has been saved"), HttpStatus.OK);
         } else {
-            return new ResponseEntity<>("User have already had cv", HttpStatus.CONFLICT);
+            return new ResponseEntity<>(new StringResponse("User have already had cv"), HttpStatus.CONFLICT);
         }
 
     }

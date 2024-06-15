@@ -111,9 +111,26 @@ CREATE INDEX idx__cv_data__email
     ON cv_data (cvbird_user_id);
 
 
+--user_balance
+CREATE TABLE user_balance (
+  id BIGSERIAL NOT NULL PRIMARY KEY,
+  cvbird_user_id INT NOT NULL,
+  balance NUMERIC,
+  CONSTRAINT fk_cvbird_user FOREIGN KEY(cvbird_user_id) REFERENCES cvbird_user(cvbird_user_id)
+);
+-- TODO
+--idex
 
-
-
+--user_transaction
+CREATE TABLE transaction_info (
+  id BIGSERIAL NOT NULL PRIMARY KEY,
+  cvbird_user_id INT NOT NULL,
+  transaction_info TEXT,
+  transaction_date TIMESTAMP DEFAULT CURRENT_DATE,
+  CONSTRAINT fk_cvbird_user FOREIGN KEY(cvbird_user_id) REFERENCES cvbird_user(cvbird_user_id)
+);
+-- TODO
+--idex
 
 -- TODO
 --user cv digest

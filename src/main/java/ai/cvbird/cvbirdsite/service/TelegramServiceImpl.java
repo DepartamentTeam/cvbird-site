@@ -1,14 +1,8 @@
 package ai.cvbird.cvbirdsite.service;
 
-import ai.cvbird.cvbirdsite.dao.CVBirdUserRepository;
-import ai.cvbird.cvbirdsite.dao.TelegramStatisticRepository;
-import ai.cvbird.cvbirdsite.dao.TelegramUserRepository;
-import ai.cvbird.cvbirdsite.dao.UserRepository;
+import ai.cvbird.cvbirdsite.dao.*;
 import ai.cvbird.cvbirdsite.dto.*;
-import ai.cvbird.cvbirdsite.model.CVBirdUser;
-import ai.cvbird.cvbirdsite.model.TelegramStatistic;
-import ai.cvbird.cvbirdsite.model.TelegramUser;
-import ai.cvbird.cvbirdsite.model.User;
+import ai.cvbird.cvbirdsite.model.*;
 import ai.cvbird.cvbirdsite.registration.OnTelegramRegistrationCompleteEvent;
 import org.apache.commons.text.RandomStringGenerator;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,10 +11,13 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.math.BigDecimal;
 import java.time.ZonedDateTime;
 
 @Service
 public class TelegramServiceImpl implements TelegramService{
+
+    BigDecimal FIRST_BALANCE_AMOUNT = new BigDecimal("15");
 
     @Autowired
     PasswordEncoder passwordEncoder;
@@ -42,6 +39,9 @@ public class TelegramServiceImpl implements TelegramService{
 
     @Autowired
     ApplicationEventPublisher applicationEventPublisher;
+
+    @Autowired
+    BalanceRepository balanceRepository;
 
     @Override
     @Transactional
@@ -79,22 +79,18 @@ public class TelegramServiceImpl implements TelegramService{
     }
 
     @Override
-    public CVBirdUser saveUnknownUser(CVBirdUserDTO cvBirdUserDTO) {
-        if (cvBirdUserDTO.getTelegramId() != null) {
-            CVBirdUser cvBirdUser = cvBirdUserConverter.fromDTO(cvBirdUserDTO);
-            cvBirdUser.setRegistrationDate(ZonedDateTime.now());
-            return cvBirdUserRepository.save(cvBirdUser);
-        }
-        return null;
-    }
-
-    @Override
+    @Transactional
     public CVBirdUser saveUnknownUser(TelegramStatisticDTO telegramStatisticDTO) {
         if (telegramStatisticDTO.getTelegramId() != null) {
             CVBirdUser cvBirdUser = cvBirdUserConverter.fromTelegramStatisticDTO(telegramStatisticDTO);
             cvBirdUser.setRegistrationDate(ZonedDateTime.now());
             cvBirdUser.setEnabled(true);
-            return cvBirdUserRepository.save(cvBirdUser);
+            CVBirdUser newCVbirdUser =  cvBirdUserRepository.save(cvBirdUser);
+            Balance balance = new Balance();
+            balance.setCvbirdUser(newCVbirdUser);
+            balance.setBalance(FIRST_BALANCE_AMOUNT);
+            balanceRepository.save(balance);
+            return cvBirdUser;
         }
         return null;
     }

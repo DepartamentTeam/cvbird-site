@@ -1,6 +1,7 @@
 package ai.cvbird.cvbirdsite.controller;
 
 import ai.cvbird.cvbirdsite.dto.Vacancy;
+import ai.cvbird.cvbirdsite.exception.NotEnoughFundsException;
 import ai.cvbird.cvbirdsite.model.CVBirdUser;
 import ai.cvbird.cvbirdsite.service.TelegramService;
 import ai.cvbird.cvbirdsite.service.VacancyService;
@@ -8,7 +9,6 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.FieldError;
@@ -30,26 +30,21 @@ public class VacancyController {
     @Autowired
     TelegramService telegramService;
 
-    @Operation(summary = "Get list of recommended vacancies by CVBirdUserId")
-    @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "Vacancies have been found")})
-    @GetMapping(value = "/get/{cvBirdUserId}", params = { "page", "size" })
-    public ResponseEntity<List<Vacancy>> getVacancy(@RequestParam("page") int page,
-                                                       @RequestParam("size") int size,@PathVariable Long cvBirdUserId) {
-        Page<Vacancy> pages = vacancyService.getVacancies(cvBirdUserId, page , size);
-        return new ResponseEntity<>(pages.getContent(), HttpStatus.OK);
-    }
-
     @Operation(summary = "Get list of recommended vacancies by CVBirdUserId by Telegram ID")
     @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "Vacancies have been found")})
-    @GetMapping(value = "/get_by_telegram_id/{telegramId}", params = { "page", "size" })
-    public ResponseEntity<List<Vacancy>> getCVByTelegramId(@RequestParam("page") int page,
-                                                    @RequestParam("size") int size,@RequestBody String telegramId){
+            @ApiResponse(responseCode = "200", description = "Vacancies have been found"),
+            @ApiResponse(responseCode = "422", description = "There are not enough funds on your balance")})
+    @GetMapping(value = "/get_by_telegram_id/{telegramId}")
+    public ResponseEntity<List<Vacancy>> getCVByTelegramId(@PathVariable String telegramId){
         CVBirdUser cvBirdUser = telegramService.getCVBirdUser(telegramId);
         if (cvBirdUser != null){
-            Page<Vacancy> pages = vacancyService.getVacancies(cvBirdUser.getCvBirdUserId(), page , size);
-            return new ResponseEntity<>(pages.getContent(), HttpStatus.OK);
+            try {
+                List<Vacancy> list = vacancyService.getVacancies(cvBirdUser.getCvBirdUserId());
+                return new ResponseEntity<>(list, HttpStatus.OK);
+            } catch (NotEnoughFundsException e) {
+                return new ResponseEntity<>(null, HttpStatus.UNPROCESSABLE_ENTITY);
+            }
+
         }
         return new ResponseEntity<>(null, HttpStatus.OK);
     }

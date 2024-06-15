@@ -14,8 +14,6 @@ public interface TelegramService {
 
     TelegramUser saveTelegramUser(TelegramUserDTO telegramUserDTO);
 
-    CVBirdUser saveUnknownUser(CVBirdUserDTO cvBirdUserDTO);
-
     CVBirdUser saveUnknownUser(TelegramStatisticDTO telegramStatisticDTO);
 
     CVBirdUser getCVBirdUser(String telegramId);
