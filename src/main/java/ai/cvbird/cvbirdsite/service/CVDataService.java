@@ -15,4 +15,6 @@ public interface CVDataService {
 
     CVData setCVFile(CVBirdUser cvBirdUser, String cvFile);
 
+    CVData getCVDate (String telegramId);
+
 }

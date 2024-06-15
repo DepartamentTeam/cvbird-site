@@ -25,7 +25,7 @@ public class CVData {
     Long id;
 
     @OneToOne(cascade = CascadeType.ALL)
-    @JoinColumn(name = "cvbird_user_id", referencedColumnName = "cvbird_user_id")
+    @JoinColumn(name = "cvbird_user_id", referencedColumnName = "cvbird_user_id", unique = true)
     CVBirdUser cvbirdUser;
 
     @Column(name = "cv_file", updatable = false)

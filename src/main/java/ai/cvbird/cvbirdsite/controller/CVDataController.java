@@ -62,13 +62,15 @@ public class CVDataController {
     @PostMapping(value = "/store_by_telegram_id", consumes = MediaType.APPLICATION_JSON_VALUE,
             produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<StringResponse> storeCVByTelegramId(@RequestBody TelegramRequestFile telegramRequestFile){
-        if (cvDataService.getCVFile(telegramRequestFile.getTelegramId()) == null) {
-            CVData cvData = cvDataService.setCVFile(telegramRequestFile.getTelegramId(), telegramRequestFile.getFile());
-            return new ResponseEntity<>(new StringResponse("CV has been saved"), HttpStatus.OK);
-        } else {
-            return new ResponseEntity<>(new StringResponse("User have already had cv"), HttpStatus.CONFLICT);
+        if (telegramRequestFile.getFile() != null) {
+            if (cvDataService.getCVDate(telegramRequestFile.getTelegramId()) == null) {
+                CVData cvData = cvDataService.setCVFile(telegramRequestFile.getTelegramId(), telegramRequestFile.getFile());
+                return new ResponseEntity<>(new StringResponse("CV has been saved"), HttpStatus.OK);
+            } else {
+                return new ResponseEntity<>(new StringResponse("User have already had cv"), HttpStatus.CONFLICT);
+            }
         }
-
+        return new ResponseEntity<>(new StringResponse("File must be not null"), HttpStatus.CONFLICT);
     }
 
     @ResponseStatus(HttpStatus.BAD_REQUEST)

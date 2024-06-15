@@ -35,7 +35,12 @@ public class BalanceController {
     @GetMapping(value = "/get_by_telegram_id/{telegramId}", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<StringResponse> get(@PathVariable String telegramId){
         BigDecimal balance = balanceService.getByTelegramId(telegramId);
-        return new ResponseEntity<>(new StringResponse(balance.toString()), HttpStatus.ALREADY_REPORTED);
+        CVBirdUser cvBirdUser = telegramService.getCVBirdUser(telegramId);
+        if (cvBirdUser != null) {
+            return new ResponseEntity<>(new StringResponse(balance.toString()), HttpStatus.ALREADY_REPORTED);
+        }
+        StringResponse stringResponse = new StringResponse("There is no such user " + telegramId);
+        return new ResponseEntity<>(stringResponse, HttpStatus.OK);
     }
 
 
@@ -63,8 +68,13 @@ public class BalanceController {
     public ResponseEntity<StringResponse> charging(@PathVariable String telegramId, @PathVariable String amount){
         BigDecimal bigDecimalAmount = new BigDecimal(amount);
         try {
-            BigDecimal balance = balanceService.balanceCharging(telegramId, bigDecimalAmount);
-            return new ResponseEntity<>(new StringResponse(balance.toString()), HttpStatus.OK);
+            CVBirdUser cvBirdUser = telegramService.getCVBirdUser(telegramId);
+            if (cvBirdUser != null) {
+                BigDecimal balance = balanceService.balanceCharging(telegramId, bigDecimalAmount);
+                return new ResponseEntity<>(new StringResponse(balance.toString()), HttpStatus.OK);
+            }
+            StringResponse stringResponse = new StringResponse("There is no such user " + telegramId);
+            return new ResponseEntity<>(stringResponse, HttpStatus.OK);
         } catch (NotEnoughFundsException e) {
             return new ResponseEntity<>(new StringResponse(e.getMessage()), HttpStatus.OK);
         }

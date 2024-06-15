@@ -70,6 +70,15 @@ public class CVDataServiceImpl implements CVDataService{
     }
 
     @Override
+    public CVData getCVDate(String telegramId) {
+        CVBirdUser cvBirdUser = cvBirdUserRepository.findByTelegramId(telegramId);
+        if (cvBirdUser != null) {
+            return cvDataRepository.findByCvbirdUser(cvBirdUser);
+        }
+        return null;
+    }
+
+    @Override
     public CVData setCVFile(CVBirdUser cvBirdUser, String cvFile) {
         CVData cvData = new CVData();
         cvData.setCvbirdUser(cvBirdUser);

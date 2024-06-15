@@ -48,7 +48,8 @@ public class VacancyController {
                 List<Vacancy> list = vacancyService.getVacancies(cvBirdUser.getCvBirdUserId());
                 return new ResponseEntity<>(list, HttpStatus.OK);
             } catch (NotEnoughFundsException e) {
-                return new ResponseEntity<>(null, HttpStatus.UNPROCESSABLE_ENTITY);
+                StringResponse stringResponse = new StringResponse("There are not enough funds on your balance. Balance 0. User : " + telegramId);
+                return new ResponseEntity<>(stringResponse, HttpStatus.UNPROCESSABLE_ENTITY);
             }
 
         }
