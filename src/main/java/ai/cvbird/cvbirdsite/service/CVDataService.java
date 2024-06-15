@@ -1,21 +1,18 @@
 package ai.cvbird.cvbirdsite.service;
 
-import ai.cvbird.cvbirdsite.dto.TelegramUserDTO;
-import ai.cvbird.cvbirdsite.dto.UserDto;
+import ai.cvbird.cvbirdsite.dto.CVBirdUserDTO;
+import ai.cvbird.cvbirdsite.model.CVBirdUser;
 import ai.cvbird.cvbirdsite.model.CVData;
-import ai.cvbird.cvbirdsite.model.User;
 
 public interface CVDataService {
 
-    byte[] getCVFile (String telegramId);
-    byte[] getCVFile (TelegramUserDTO telegramUserDTO);
-    byte[] getCVFile (Long id);
-    byte[] getCVFile (User user);
+    String getCVFile (String telegramId);
+    String getCVFile (CVBirdUserDTO cvBirdUserDTO);
+    String getCVFile (Long id);
+    String getCVFile (CVBirdUser cvBirdUser);
 
-    CVData setCVFile (TelegramUserDTO telegramUserDTO, byte[] cvFile);
+    CVData setCVFile (String telegramId, String cvFile);
 
-    CVData setCVFile (String telegramId, byte[] cvFile);
-
-    CVData setCVFile (User user, byte[] cvFile);
+    CVData setCVFile(CVBirdUser cvBirdUser, String cvFile);
 
 }

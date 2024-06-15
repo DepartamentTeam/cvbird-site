@@ -8,7 +8,7 @@ import java.time.ZonedDateTime;
 
 @Entity
 @Table(name = "telegram_statistic_data", indexes = {
-        @Index(name = "idx__telegram_statistic_data__email", columnList = "telegram_id"),
+        @Index(name = "idx__telegram_statistic_data__telegram_id", columnList = "telegram_id"),
         @Index(name = "idx__telegram_statistic_data__id", columnList = "id")
 })
 @Getter

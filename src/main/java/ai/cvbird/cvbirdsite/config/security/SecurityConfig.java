@@ -11,6 +11,10 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
+import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.web.cors.CorsConfiguration;
+import org.springframework.web.cors.CorsConfigurationSource;
+import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
 @Configuration
 @EnableWebSecurity
@@ -20,7 +24,9 @@ public class SecurityConfig {
            , "/_next/**", "/static/**", "/user/registration*",
            "/user_registration", "/signin_error", "logout",
            "/*.js", "/*.json", "/*.ico", "/registration_confirm*",
-           "/user/user_info", "/cv/**", "/telegram/**"};
+           "/user/user_info", "/cv/**", "/telegram/**", "/swagger/**",
+           "/swagger-ui/**","/actuator", "/webjars/**","/v3/api-docs",
+           "/v3/api-docs/swagger-config", "/vacancy/**", "/balance/**"};
 
    @Autowired
    SuccessAwareHandler successAwareHandler;
@@ -42,8 +48,8 @@ public class SecurityConfig {
                .authorizeHttpRequests((authorize) ->
                        authorize
                                .requestMatchers(PERMITTED_PATTERNS).permitAll()
-                               .anyRequest().authenticated()
-                               //.anyRequest().permitAll() // uncomment to error debug
+                               //.anyRequest().authenticated()
+                               .anyRequest().permitAll() // uncomment to error debug
                                //.requestMatchers( "/login**", "/icons/**", "/_next/**", "/manifest.json", "/img/**", "/static/**").permitAll()
 
               ).formLogin(
@@ -59,7 +65,7 @@ public class SecurityConfig {
                       logout -> logout
                               .logoutRequestMatcher(new AntPathRequestMatcher("/logout"))
                               .permitAll()
-              );
+              ).cors();
        return http.build();
    }
     @Bean
@@ -68,5 +74,12 @@ public class SecurityConfig {
         provider.setUserDetailsService(cvBirdUserDetailsService);
         provider.setPasswordEncoder(this.passwordEncoder());
         return provider;
+    }
+
+    @Bean
+    CorsConfigurationSource corsConfigurationSource() {
+        UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
+        source.registerCorsConfiguration("/**", new CorsConfiguration().applyPermitDefaultValues());
+        return source;
     }
 }

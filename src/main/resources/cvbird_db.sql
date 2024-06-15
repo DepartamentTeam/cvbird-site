@@ -1,3 +1,29 @@
+-- Table cvbird_user
+CREATE TABLE cvbird_user (
+  cvbird_user_id BIGSERIAL NOT NULL PRIMARY KEY,
+  email VARCHAR (255) UNIQUE,
+  password VARCHAR (255),
+  enabled BOOLEAN,
+  registration_date TIMESTAMP DEFAULT CURRENT_DATE,
+  telegram_id text UNIQUE,
+  telegram_first_name text,
+  telegram_is_bot boolean,
+  telegram_user_name text,
+  telegram_last_name text,
+  telegram_language_code text,
+
+  CONSTRAINT not_null_check CHECK (email is not null or telegram_id is not null)
+);
+
+CREATE INDEX idx__cvbird_user__cvbird_user_id
+    ON cvbird_user (cvbird_user_id);
+
+CREATE INDEX idx__cvbird_user__email
+    ON cvbird_user (email);
+
+CREATE INDEX idx__cvbird_user__telegram_id
+    ON cvbird_user (telegram_id);
+
 -- Table user_account
 CREATE table user_account (
    id BIGSERIAL NOT NULL PRIMARY KEY,
@@ -73,9 +99,9 @@ CREATE INDEX idx__telegram_statistic_data__telegram_id
 CREATE TABLE cv_data (
   id BIGSERIAL NOT NULL PRIMARY KEY,
   cvbird_user_id INT NOT NULL,
-  cv_file bytea,
+  cv_file text,
   cv_description TEXT,
-  CONSTRAINT fk_author FOREIGN KEY(cvbird_user_id) REFERENCES user_account(id)
+  CONSTRAINT fk_author FOREIGN KEY(cvbird_user_id) REFERENCES cvbird_user(cvbird_user_id)
 );
 
 CREATE INDEX idx__cv_data__id
@@ -83,6 +109,28 @@ CREATE INDEX idx__cv_data__id
 
 CREATE INDEX idx__cv_data__email
     ON cv_data (cvbird_user_id);
+
+
+--user_balance
+CREATE TABLE user_balance (
+  id BIGSERIAL NOT NULL PRIMARY KEY,
+  cvbird_user_id INT NOT NULL,
+  balance NUMERIC,
+  CONSTRAINT fk_cvbird_user FOREIGN KEY(cvbird_user_id) REFERENCES cvbird_user(cvbird_user_id)
+);
+-- TODO
+--idex
+
+--user_transaction
+CREATE TABLE transaction_info (
+  id BIGSERIAL NOT NULL PRIMARY KEY,
+  cvbird_user_id INT NOT NULL,
+  transaction_info TEXT,
+  transaction_date TIMESTAMP DEFAULT CURRENT_DATE,
+  CONSTRAINT fk_cvbird_user FOREIGN KEY(cvbird_user_id) REFERENCES cvbird_user(cvbird_user_id)
+);
+-- TODO
+--idex
 
 -- TODO
 --user cv digest

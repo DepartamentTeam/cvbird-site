@@ -4,11 +4,10 @@ import jakarta.persistence.*;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 
+import java.math.BigDecimal;
+
 @Entity
-@Table(name = "cv_data", indexes = {
-        @Index(name = "idx__cv_data__cvbird_user_id", columnList = "cvbird_user_id"),
-        @Index(name = "idx__cv_data__id", columnList = "id")
-})
+@Table(name = "user_balance")
 @Getter
 @Setter
 @Builder
@@ -17,7 +16,7 @@ import lombok.experimental.FieldDefaults;
 @ToString
 @EqualsAndHashCode
 @FieldDefaults(level = AccessLevel.PRIVATE)
-public class CVData {
+public class Balance {
 
     @EqualsAndHashCode.Include
     @Id
@@ -28,9 +27,6 @@ public class CVData {
     @JoinColumn(name = "cvbird_user_id", referencedColumnName = "cvbird_user_id")
     CVBirdUser cvbirdUser;
 
-    @Column(name = "cv_file", updatable = false)
-    String cvFile;
-
-    @Column(name = "cv_description", updatable = false)
-    String cvDescription;
+    @Column(name = "balance")
+    BigDecimal balance;
 }
