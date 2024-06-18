@@ -3,6 +3,9 @@ package ai.cvbird.cvbirdsite.model;
 import jakarta.persistence.*;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
+import org.hibernate.annotations.Where;
+
+import static jakarta.persistence.CascadeType.*;
 
 @Entity
 @Table(name = "cv_data", indexes = {
@@ -24,8 +27,9 @@ public class CVData {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     Long id;
 
-    @OneToOne(cascade = CascadeType.ALL)
+    @OneToOne(cascade = {PERSIST, MERGE, REFRESH, DETACH})
     @JoinColumn(name = "cvbird_user_id", referencedColumnName = "cvbird_user_id", unique = true)
+    @Where(clause = "deleted=false")
     CVBirdUser cvbirdUser;
 
     @Column(name = "cv_file", updatable = false)

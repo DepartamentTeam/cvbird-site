@@ -9,6 +9,7 @@ import ai.cvbird.cvbirdsite.model.CVBirdUser;
 import ai.cvbird.cvbirdsite.model.CVData;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Optional;
 
@@ -70,7 +71,7 @@ public class CVDataServiceImpl implements CVDataService{
     }
 
     @Override
-    public CVData getCVDate(String telegramId) {
+    public CVData getCVData(String telegramId) {
         CVBirdUser cvBirdUser = cvBirdUserRepository.findByTelegramId(telegramId);
         if (cvBirdUser != null) {
             return cvDataRepository.findByCvbirdUser(cvBirdUser);
@@ -85,11 +86,24 @@ public class CVDataServiceImpl implements CVDataService{
         cvData.setCvFile(cvFile);
         try {
             AIServiceUploadCVBase64 aiServiceUploadCVBase64 = new AIServiceUploadCVBase64(cvBirdUser.getCvBirdUserId(), cvFile);
-            aiServiceClient.upload_cv(aiServiceUploadCVBase64);
+            aiServiceClient.uploadCv(aiServiceUploadCVBase64);
         } catch (Exception e) {
             System.out.println("cvBirdUser:" + cvBirdUser + "didn't upload cv : " + e);
         }
 
         return cvDataRepository.save(cvData);
+    }
+
+    @Override
+    @Transactional
+    public Boolean deleteCVData(CVBirdUser cvBirdUser) {
+        //deleteAivectorCV(cvBirdUser);
+        CVData cvData = cvDataRepository.findByCvbirdUser(cvBirdUser);
+        Integer integer = cvDataRepository.deleteByCvbirdUser(cvBirdUser);
+        return integer == 1;
+    }
+
+    private String deleteAivectorCV(CVBirdUser cvBirdUser){
+        return aiServiceClient.deleteCv(cvBirdUser.getCvBirdUserId());
     }
 }
