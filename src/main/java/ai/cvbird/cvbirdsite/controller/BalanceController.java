@@ -37,7 +37,7 @@ public class BalanceController {
         BigDecimal balance = balanceService.getByTelegramId(telegramId);
         CVBirdUser cvBirdUser = telegramService.getCVBirdUser(telegramId);
         if (cvBirdUser != null) {
-            return new ResponseEntity<>(new StringResponse(balance.toString()), HttpStatus.ALREADY_REPORTED);
+            return new ResponseEntity<>(new StringResponse(balance.toString()), HttpStatus.OK);
         }
         StringResponse stringResponse = new StringResponse("There is no such user " + telegramId);
         return new ResponseEntity<>(stringResponse, HttpStatus.OK);
@@ -49,6 +49,7 @@ public class BalanceController {
             @ApiResponse(responseCode = "200", description = "Successful")})
     @GetMapping(value = "/top_up/{telegramId}/{amount}",
             produces = MediaType.APPLICATION_JSON_VALUE)
+    //@PreAuthorize("@securityService.isAllowedAccessByCurrentUser(#resource?.userId)")
     public ResponseEntity<StringResponse> topUp(@PathVariable String telegramId, @PathVariable String amount){
         BigDecimal bigDecimalAmount = new BigDecimal(amount);
         CVBirdUser cvBirdUser = telegramService.getCVBirdUser(telegramId);

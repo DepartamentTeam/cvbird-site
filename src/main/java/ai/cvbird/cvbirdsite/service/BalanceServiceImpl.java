@@ -19,9 +19,6 @@ public class BalanceServiceImpl implements BalanceService{
     BalanceRepository balanceRepository;
 
     @Autowired
-    CVBirdUserRepository cvBirdUserRepository;
-
-    @Autowired
     TelegramService telegramService;
 
     @Override
