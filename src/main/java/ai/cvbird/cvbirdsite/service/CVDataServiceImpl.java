@@ -7,6 +7,8 @@ import ai.cvbird.cvbirdsite.dao.UserRepository;
 import ai.cvbird.cvbirdsite.dto.*;
 import ai.cvbird.cvbirdsite.model.CVBirdUser;
 import ai.cvbird.cvbirdsite.model.CVData;
+import feign.Feign;
+import feign.FeignException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -33,7 +35,6 @@ public class CVDataServiceImpl implements CVDataService{
 
     @Autowired
     AIRestServiceImpl aiRestService;
-
     @Override
     public String getCVFile(String telegramId) {
         CVBirdUser cvBirdUser = cvBirdUserRepository.findByTelegramId(telegramId);
@@ -42,7 +43,6 @@ public class CVDataServiceImpl implements CVDataService{
         }
         return null;
     }
-
     @Override
     public String getCVFile(CVBirdUserDTO cvBirdUserDTO) {
         cvBirdUserConverter.fromDTO(cvBirdUserDTO);
@@ -63,13 +63,11 @@ public class CVDataServiceImpl implements CVDataService{
         }
         return null;
     }
-
     @Override
     public CVData setCVFile(String telegramId, String cvFile) {
         CVBirdUser cvBirdUser = cvBirdUserRepository.findByTelegramId(telegramId);
         return  setCVFile(cvBirdUser, cvFile);
     }
-
     @Override
     public CVData getCVData(String telegramId) {
         CVBirdUser cvBirdUser = cvBirdUserRepository.findByTelegramId(telegramId);
@@ -97,8 +95,7 @@ public class CVDataServiceImpl implements CVDataService{
     @Override
     @Transactional
     public Boolean deleteCVData(CVBirdUser cvBirdUser) {
-        //deleteAivectorCV(cvBirdUser);
-        CVData cvData = cvDataRepository.findByCvbirdUser(cvBirdUser);
+        deleteAivectorCV(cvBirdUser);
         Integer integer = cvDataRepository.deleteByCvbirdUser(cvBirdUser);
         return integer == 1;
     }
