@@ -6,7 +6,6 @@ import ai.cvbird.cvbirdsite.dto.GetVacanciesRequestBody;
 import feign.Param;
 import feign.RequestLine;
 import org.springframework.cloud.openfeign.FeignClient;
-import org.springframework.cloud.openfeign.SpringQueryMap;
 import org.springframework.web.bind.annotation.RequestBody;
 
 @FeignClient(name = "ai-service-client", url = "${feign.ai-service.url}")
@@ -19,17 +18,9 @@ public interface AIServiceClient {
     AIServiceVacancyRequest getVacancies(@RequestBody GetVacanciesRequestBody getVacanciesRequestBody);
 
     @RequestLine("POST /upload_cv_base64/")
-    String upload_cv(@RequestBody AIServiceUploadCVBase64 data);
+    String uploadCv(@RequestBody AIServiceUploadCVBase64 data);
 
-   //@RequestLine("POST /telegram/statistic/save")
-   //String saveStatistic(StatisticDTO statisticDTO);
+    @RequestLine("POST /delete_user_data/")
+    String deleteCv(@Param("user_id") Long cvBirdUserId);
 
-   //@RequestLine("POST /telegram/get_user_statistic")
-   //StatisticDTO getUserStatistic(@SpringQueryMap RequestGetUserStatistic requestGetUserStatistic);
-
-   //@RequestLine("GET /user/user_info")
-   //String userInfo();
-
-   //@RequestMapping(method = RequestMethod.GET, value = "/stores")
-   //Page<Store> getStores(Pageable pageable);
 }

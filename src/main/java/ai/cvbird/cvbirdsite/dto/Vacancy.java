@@ -1,5 +1,6 @@
 package ai.cvbird.cvbirdsite.dto;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -16,9 +17,17 @@ public class Vacancy {
     String url;
     String salary;
     String location;
+
+    @JsonProperty("employment_type")
     String employmentType;
     String created;
     String contacts;
     String score;
+
+    @JsonProperty("job_id")
+    String jobId;
+
+    @JsonProperty("tg_chat_id")
+    String tgChatId;
 
 }

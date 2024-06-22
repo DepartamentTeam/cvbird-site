@@ -17,7 +17,7 @@ import java.time.ZonedDateTime;
 @Service
 public class TelegramServiceImpl implements TelegramService{
 
-    BigDecimal FIRST_BALANCE_AMOUNT = new BigDecimal("15");
+    BigDecimal FIRST_BALANCE_AMOUNT = new BigDecimal("0.2");
 
     @Autowired
     PasswordEncoder passwordEncoder;

@@ -20,16 +20,13 @@ public class VacancyServiceImpl implements VacancyService {
 
     Integer VACANCIES_NUMBER = 15;
 
-    BigDecimal cost = new BigDecimal("15");
+    BigDecimal cost = new BigDecimal("0.1");
 
     @Autowired
     AIServiceClient aiServiceClient;
 
     @Autowired
     CVBirdUserRepository cvBirdUserRepository;
-
-    @Autowired
-    BalanceRepository balanceRepository;
 
     @Autowired
     BalanceService balanceService;

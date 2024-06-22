@@ -8,4 +8,8 @@ public interface CVDataRepository extends JpaRepository<CVData, Long> {
 
     CVData findByCvbirdUser(CVBirdUser cvBirdUser);
 
+    Integer deleteByCvbirdUser(CVBirdUser cvBirdUser);
+
+    void deleteById(Long id);
+
 }

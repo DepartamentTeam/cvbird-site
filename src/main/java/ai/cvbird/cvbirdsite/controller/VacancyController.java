@@ -1,10 +1,10 @@
 package ai.cvbird.cvbirdsite.controller;
 
-import ai.cvbird.cvbirdsite.dto.CVBirdUserResponse;
 import ai.cvbird.cvbirdsite.dto.StringResponse;
 import ai.cvbird.cvbirdsite.dto.Vacancy;
 import ai.cvbird.cvbirdsite.exception.NotEnoughFundsException;
 import ai.cvbird.cvbirdsite.model.CVBirdUser;
+import ai.cvbird.cvbirdsite.service.CVDataService;
 import ai.cvbird.cvbirdsite.service.TelegramService;
 import ai.cvbird.cvbirdsite.service.VacancyService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -35,6 +35,9 @@ public class VacancyController {
     @Autowired
     TelegramService telegramService;
 
+    @Autowired
+    CVDataService cvDataService;
+
     @Operation(summary = "Get list of recommended vacancies by CVBirdUserId by Telegram ID")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Vacancies have been found",content = { @Content(mediaType = "application/json",
@@ -44,13 +47,17 @@ public class VacancyController {
     public ResponseEntity<?> getCVByTelegramId(@PathVariable String telegramId){
         CVBirdUser cvBirdUser = telegramService.getCVBirdUser(telegramId);
         if (cvBirdUser != null){
-            try {
-                List<Vacancy> list = vacancyService.getVacancies(cvBirdUser.getCvBirdUserId());
-                return new ResponseEntity<>(list, HttpStatus.OK);
-            } catch (NotEnoughFundsException e) {
-                return new ResponseEntity<>(null, HttpStatus.UNPROCESSABLE_ENTITY);
+            if (cvDataService.getCVData(telegramId) != null){
+                try {
+                    List<Vacancy> list = vacancyService.getVacancies(cvBirdUser.getCvBirdUserId());
+                    return new ResponseEntity<>(list, HttpStatus.OK);
+                } catch (NotEnoughFundsException e) {
+                    StringResponse stringResponse = new StringResponse("There are not enough funds on your balance. Balance 0. User : " + telegramId);
+                    return new ResponseEntity<>(stringResponse, HttpStatus.UNPROCESSABLE_ENTITY);
+                }
             }
-
+            StringResponse stringResponse = new StringResponse("User " + telegramId +  " has not cv");
+            return new ResponseEntity<>(stringResponse, HttpStatus.UNPROCESSABLE_ENTITY);
         }
         StringResponse stringResponse = new StringResponse("There is no such user" + telegramId);
         return new ResponseEntity<>(stringResponse, HttpStatus.OK);
